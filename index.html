@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech - Gestão de Biblioteca</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>BiblioTech</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" onclick="navegar('emprestimos')">Empréstimos</a></li>
+                    <li><a href="#" class="nav-link" onclick="navegar('livros')">Livros</a></li>
+                    <li><a href="#" class="nav-link" onclick="navegar('alunos')">Alunos</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <header>
+                <h1>Painel de Controle</h1>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="usuario-logado"></div>
+                    <button onclick="logout()" style="padding: 8px 15px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Sair</button>
+                </div>
+            </header>
+
+            <!-- Seção de Empréstimos (Padrão) -->
+            <section id="secao-emprestimos">
+                <div class="card">
+                    <h3>Novo Empréstimo</h3>
+                    <form id="form-emprestimo">
+                        <div class="form-group">
+                            <label for="input-aluno">Aluno</label>
+                            <input type="text" id="input-aluno" placeholder="Nome ou Matrícula" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-livro">Livro</label>
+                            <input type="text" id="input-livro" placeholder="Título ou ISBN" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Registrar Saída</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Empréstimos Recentes</h3>
+                    <table class="tabela-dados">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Livro</th>
+                                <th>Retirada</th>
+                                <th>Devolução</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-emprestimos-body">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Seção de Livros (será preenchida via JS) -->
+            <section id="secao-livros" style="display: none;">
+                <div id="form-livro-container" style="display: none;">
+                    <div class="card">
+                        <h3>Cadastrar Novo Livro (Admin)</h3>
+                        <form id="form-livro">
+                            <div class="form-group">
+                                <label>Título</label>
+                                <input type="text" id="input-titulo-livro" placeholder="Título do Livro" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gênero</label>
+                                <input type="text" id="input-genero-livro" placeholder="Ex: Fantasia" required>
+                            </div>
+                            <div class="form-group">
+                                <label>URL da Capa</label>
+                                <input type="url" id="input-capa-livro" placeholder="https://exemplo.com/capa.jpg" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Estoque</label>
+                                <input type="number" id="input-estoque-livro" placeholder="Quantidade de cópias" required min="1" value="1">
+                            </div>
+                            <button type="submit" class="btn-primary">Adicionar Livro</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="livros-gallery"></div>
+            </section>
+
+            <!-- Seção de Alunos -->
+            <section id="secao-alunos" style="display: none;">
+                <div class="card">
+                    <h3>Cadastrar Novo Aluno</h3>
+                    <form id="form-aluno">
+                        <div class="form-group">
+                            <label>Nome</label>
+                            <input type="text" id="input-nome-aluno" placeholder="Nome completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" id="input-matricula-aluno" placeholder="Ex: RA1234" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Senha</label>
+                            <input type="password" id="input-senha-aluno" placeholder="Senha de acesso" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Cadastrar Aluno</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Alunos Vinculados</h2>
+                    <p id="total-alunos">Total de Alunos: 0</p>
+                    <table class="tabela-dados">
+                        <thead id="tabela-alunos-head">
+                            <!-- Cabeçalho gerado via JS -->
+                        </thead>
+                        <tbody id="tabela-alunos-body">
+                            <!-- Corpo da tabela gerado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        </div>
+    <script src="script.js"></script>
+
+    <!-- Modal de Detalhes do Livro -->
+    <div id="livro-detalhes-modal" class="modal" onclick="fecharDetalhesLivro()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="fecharDetalhesLivro()">&times;</span>
+            <div class="modal-body">
+                <img id="modal-capa-livro" src="" alt="Capa do Livro" class="modal-capa">
+                <div class="modal-info">
+                    <h2 id="modal-titulo-livro"></h2>
+                    <p id="modal-genero-livro"></p>
+                    <h3>Descrição</h3>
+                    <p id="modal-descricao-livro"></p>
+                    <h3>Resumo</h3>
+                    <p id="modal-resumo-livro"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

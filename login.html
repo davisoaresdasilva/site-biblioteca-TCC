@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Importando fontes elegantes do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Lado da Imagem (Decorativo) -->
+            <div class="login-image-side">
+                <div class="overlay-content">
+                    <h2 id="frase-destaque"></h2>
+                    <p id="autor-frase"></p>
+                </div>
+            </div>
+
+            <!-- Lado do Formulário -->
+            <div class="login-form-side">
+                <div class="login-header">
+                    <h1>Login</h1>
+                    <p>Acesse o portal de gestão do conhecimento.</p>
+                </div>
+                
+                <form onsubmit="realizarLogin(event)">
+                    <div class="form-group">
+                        <label for="usuario">Usuário / Matrícula</label>
+                        <input type="text" id="usuario" placeholder="Ex: admin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" placeholder="Sua senha" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary full-width">Entrar</button>
+                </form>
+                
+                <div class="login-footer">
+                    <a href="#">Esqueci minha senha</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Frases motivacionais aleatórias
+        const frases = [
+            { texto: "Um livro é um sonho que você segura na mão.", autor: "Neil Gaiman" },
+            { texto: "Ler é viajar sem sair do lugar.", autor: "Autor Desconhecido" },
+            { texto: "A leitura engrandece a alma.", autor: "Voltaire" },
+            { texto: "Quem não lê, mal fala, mal ouve, mal vê.", autor: "Malba Tahan" },
+            { texto: "Muitos homens iniciaram uma nova era na sua vida a partir da leitura de um livro.", autor: "Henry David Thoreau" },
+            { texto: "Os livros não mudam o mundo, quem muda o mundo são as pessoas. Os livros só mudam as pessoas.", autor: "Mário Quintana" },
+            { texto: "A leitura é para o intelecto o que o exercício é para o corpo.", autor: "Joseph Addison" },
+            { texto: "Sempre imaginei que o paraíso fosse uma espécie de livraria.", autor: "Jorge Luis Borges" }
+        ];
+
+        // Seleciona uma frase aleatória ao carregar
+        const fraseEl = document.getElementById('frase-destaque');
+        const autorEl = document.getElementById('autor-frase');
+        
+        const indiceAleatorio = Math.floor(Math.random() * frases.length);
+        fraseEl.textContent = `"${frases[indiceAleatorio].texto}"`;
+        autorEl.textContent = `– ${frases[indiceAleatorio].autor}`;
+
+        function realizarLogin(event) {
+            event.preventDefault();
+            // Simulação de autenticação
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+
+            // Lógica simples para definir o papel (role)
+            let role = 'user'; // Papel padrão
+            if (usuario.toLowerCase() === 'admin' && senha === 'admin') {
+                role = 'admin';
+            }
+
+            localStorage.setItem('usuarioLogado', usuario);
+            localStorage.setItem('userRole', role); // Salva o papel do usuário
+            // Simula o login redirecionando para o painel principal
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

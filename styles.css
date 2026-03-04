@@ -1,0 +1,504 @@
+body {
+    font-family: 'Poppins', sans-serif; /* Fonte mais moderna para o corpo */
+    margin: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50; /* Cor de fundo de segurança */
+    /* Textura de fundo com livros para a barra lateral */
+    background-image: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=2282&q=80');
+    background-size: cover;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .logo {
+    padding: 20px;
+    text-align: center;
+    background-color: #1a252f;
+}
+
+/* Adiciona um ícone de livros antes do título */
+.sidebar .logo h2::before {
+    content: "📚 ";
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar nav a {
+    display: block;
+    padding: 15px 20px;
+    color: #ecf0f1;
+    text-decoration: none;
+    border-bottom: 1px solid #34495e;
+}
+
+.sidebar nav a:hover, .sidebar nav a.active {
+    background-color: #34495e;
+}
+
+/* Conteúdo Principal */
+.content {
+    flex: 1;
+    padding: 20px;
+    /* Fundo temático para a área principal */
+    background-image: linear-gradient(rgba(244, 244, 249, 0.92), rgba(244, 244, 249, 0.92)), url('https://images.unsplash.com/photo-1507842217121-9e93c8ddd37f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+header #usuario-logado {
+    font-weight: bold;
+    animation: fadeIn 2.5s ease-in-out;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    /* Gradiente chamativo */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Roxo/Azul Vibrante */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4); /* Sombra colorida */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+}
+
+.btn-excluir {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+.btn-excluir:hover {
+    background-color: #c0392b;
+}
+
+/* Tabela */
+.tabela-dados {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabela-dados th, .tabela-dados td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.status-atrasado { color: #e74c3c; font-weight: bold; }
+.status-aberto { color: #2980b9; font-weight: bold; }
+
+/* Miniatura da capa na tabela de empréstimos */
+.capa-miniatura {
+    width: 30px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Estilos da Página de Login */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1a252f;
+    /* Imagem profissional: Biblioteca com estantes e pessoas lendo/estudando */
+    background-image: linear-gradient(rgba(20, 30, 48, 0.6), rgba(36, 59, 85, 0.6)), url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.login-card {
+    display: flex; /* Ativa o layout lado a lado */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 900px;
+    min-height: 550px;
+    overflow: hidden; /* Garante que a imagem respeite as bordas arredondadas */
+    padding: 0; /* Remove padding do container principal */
+    border-top: none; /* Remove a borda superior do estilo anterior */
+}
+
+/* Lado da Imagem */
+.login-image-side {
+    flex: 1; /* Ocupa 50% do espaço */
+    background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    color: white;
+}
+
+.login-image-side::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.2));
+}
+
+.overlay-content {
+    position: relative;
+    padding: 40px;
+    z-index: 1;
+    animation: fadeIn 2.5s ease-in-out; /* Aplica a animação mais lenta */
+}
+
+.overlay-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    margin-bottom: 15px;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.overlay-content p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Lado do Formulário */
+.login-form-side {
+    flex: 1; /* Ocupa os outros 50% */
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-header h1 {
+    margin: 0 0 10px 0;
+    font-family: 'Playfair Display', serif;
+    color: #2c3e50;
+    font-size: 2.8rem;
+    font-weight: 700;
+}
+
+/* Inputs mais bonitos */
+.login-form-side input { /* Seletor mais específico */
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.login-form-side input:focus { /* Seletor mais específico */
+    border-color: #667eea;
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.full-width {
+    width: 100%;
+    font-size: 18px;
+    padding: 15px;
+    margin-top: 25px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.login-footer a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade para celulares */
+@media (max-width: 768px) {
+    .login-card {
+        flex-direction: column;
+        max-width: 400px;
+        min-height: auto;
+    }
+    .login-image-side {
+        display: none; /* Esconde a imagem em telas pequenas */
+    }
+    .login-form-side {
+        padding: 30px;
+    }
+}
+
+/* Animação de Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos da Seção de Livros */
+.genero-titulo {
+    border-bottom: 2px solid #2c3e50;
+    padding-bottom: 5px;
+    margin-top: 30px;
+    color: #2c3e50;
+}
+
+.livros-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-top: 20px;
+    justify-content: flex-start;
+}
+
+.livro-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    width: 180px;
+    text-align: center;
+    position: relative;
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.livro-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.livro-capa {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 6px;
+    /* Sombra mais elaborada para dar profundidade */
+    box-shadow: 
+        -1px 1px 3px rgba(0,0,0,0.1),
+        -3px 3px 8px rgba(0,0,0,0.1),
+        -5px 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,0.1); /* Borda sutil */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.livro-card:hover .livro-capa {
+    transform: scale(1.03); /* Aumenta levemente a capa */
+    box-shadow: 
+        -1px 1px 5px rgba(0,0,0,0.15),
+        -5px 5px 15px rgba(0,0,0,0.15),
+        -10px 10px 25px rgba(0,0,0,0.15);
+}
+
+.livro-titulo {
+    font-weight: 700;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    line-height: 1.4;
+    min-height: 40px;
+}
+
+.btn-excluir-livro {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.btn-excluir-livro:hover {
+    opacity: 1;
+}
+
+.btn-solicitar {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.btn-solicitar:hover {
+    background-color: #5a6fd6;
+}
+
+/* Estilos do Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 800px;
+    position: relative;
+    animation: fadeIn 0.5s;
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #333;
+}
+
+.modal-body {
+    display: flex;
+    gap: 30px;
+}
+
+.modal-capa {
+    width: 250px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.modal-info {
+    flex: 1;
+}
+
+.modal-info h2 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.modal-info h3 {
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 5px;
+    margin-top: 20px;
+    color: #333;
+}
+
+.modal-info p {
+    line-height: 1.6;
+    text-align: justify;
+}

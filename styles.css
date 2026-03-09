@@ -7,7 +7,7 @@ body {
 
 .app-container {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - 45px); /* Ajuste para a top-bar */
 }
 
 /* Sidebar */
@@ -55,10 +55,11 @@ body {
 .content {
     flex: 1;
     padding: 20px;
-    /* Fundo temático para a área principal */
-    background-image: linear-gradient(rgba(244, 244, 249, 0.92), rgba(244, 244, 249, 0.92)), url('https://images.unsplash.com/photo-1507842217121-9e93c8ddd37f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
-    background-size: cover;
-    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    background-image: none;
+    background-color: #eef1f5; /* Fundo padrão profissional */
+    transition: background-color 0.3s ease; /* Transição suave de cor */
 }
 
 header {
@@ -85,6 +86,7 @@ header #usuario-logado {
 
 .form-group {
     margin-bottom: 15px;
+    position: relative; /* Para posicionar o container de sugestões */
 }
 
 .form-group label {
@@ -234,6 +236,7 @@ header #usuario-logado {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative; /* Para posicionar o toggle de tema */
 }
 
 .login-header {
@@ -361,7 +364,7 @@ header #usuario-logado {
 .livro-capa {
     width: 100%;
     height: 240px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 6px;
     /* Sombra mais elaborada para dar profundidade */
     box-shadow: 
@@ -501,4 +504,525 @@ header #usuario-logado {
 .modal-info p {
     line-height: 1.6;
     text-align: justify;
+}
+
+/* Estilos da Página Splash (home.html) */
+.splash-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    color: white;
+    /* Imagem de fundo profissional com tema de biblioteca */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-position: center;
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.splash-content {
+    animation: fadeIn 2s ease-in-out;
+    /* Efeito de moldura bonita e moderna (glassmorphism) */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* Para compatibilidade com Safari */
+    padding: 40px 60px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.splash-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.splash-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.btn-splash {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: inline-block;
+}
+
+.btn-splash:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Estilos da Tela de Carregamento */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: none; /* Inicia oculto */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 2000;
+}
+
+body.dark-mode #loading-overlay {
+    background-color: rgba(26, 37, 47, 0.9);
+}
+
+body.dark-mode #loading-overlay p {
+    color: #ecf0f1;
+}
+
+#loading-overlay p {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Animação do Livro */
+.book {
+    --color: #fff;
+    --duration: 6.8s;
+    width: 32px;
+    height: 12px;
+    position: relative;
+    margin: 32px 0 0 0;
+    zoom: 1.5;
+}
+
+.book .book__pg-shadow {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: left center;
+    transform: scaleY(0);
+    animation: book-page-shadow var(--duration) linear infinite;
+}
+
+.book .book__pg {
+    width: 16px;
+    height: 10px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform-origin: left center;
+    border-radius: 0 2px 2px 0;
+    background: var(--color);
+    transform: scaleY(0);
+    animation: book-page var(--duration) linear infinite;
+}
+
+.book .book__pg--2 { animation-delay: 0.25s; }
+.book .book__pg--3 { animation-delay: 0.5s; }
+.book .book__pg--4 { animation-delay: 0.75s; }
+.book .book__pg--5 { animation-delay: 1s; }
+
+@keyframes book-page {
+    0%, 12.5% { transform: scaleY(0); }
+    25%, 75% { transform: scaleY(1); }
+    87.5%, 100% { transform: scaleY(0); }
+}
+
+@keyframes book-page-shadow {
+    0%, 12.5% { transform: scaleY(0); }
+    25%, 75% { transform: scaleY(1); }
+    87.5%, 100% { transform: scaleY(0); }
+}
+
+/* Estilos para a seção de Comentários/Feedback */
+.comentario-item {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border-left: 4px solid #667eea; /* Detalhe colorido à esquerda */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: #2c3e50;
+}
+
+.comentario-data {
+    font-size: 0.8rem;
+    color: #95a5a6;
+}
+
+.comentario-texto {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+#texto-novo-comentario {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    resize: vertical; /* Permite redimensionar apenas verticalmente */
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+#texto-novo-comentario:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+/* Estilos para as Estrelas de Classificação */
+.star-filled { color: #f1c40f; } /* Amarelo/Dourado */
+.star-empty { color: #ccc; }
+.stars-display { font-size: 1rem; }
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stars-input span {
+    font-size: 1.5rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+    display: inline-block;
+}
+
+.stars-input span.active, .stars-input span:hover {
+    color: #f1c40f;
+    transform: scale(1.1);
+}
+
+/* Estilos para o Toggle de Modo Escuro */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+}
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 44px;
+}
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    background-color: #4a627a;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+}
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 16px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 16px;
+}
+input:checked + .slider {
+    background-color: #667eea;
+}
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* --- TEMA MODO ESCURO --- */
+body.dark-mode {
+    background-color: #1a252f;
+    color: #ecf0f1;
+}
+
+/* Estilos do Modo Escuro para a Página de Login */
+body.dark-mode .login-card {
+    background: #2c3e50;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .login-header h1,
+body.dark-mode .login-header p {
+    color: #ecf0f1;
+}
+
+body.dark-mode .login-form-side input {
+    background-color: #34495e;
+    color: #ecf0f1;
+    border: 1px solid #4a627a;
+}
+
+body.dark-mode .login-form-side input:focus {
+    border-color: #764ba2;
+    background-color: #3a506b;
+    box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.2);
+}
+
+body.dark-mode .login-footer {
+    color: #95a5a6;
+}
+
+body.dark-mode .login-footer a {
+    color: #76a9ea;
+}
+
+/* Estilos do Modo Escuro para o Modal de Recuperação de Senha */
+body.dark-mode #recuperar-senha-modal .modal-content {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+}
+
+body.dark-mode #recuperar-senha-modal .close-button {
+    color: #bdc3c7;
+}
+
+body.dark-mode #recuperar-senha-modal .close-button:hover {
+    color: #fff;
+}
+
+/* Ajusta a cor das mensagens de sucesso/erro no modal de recuperação em modo escuro */
+body.dark-mode #resultado-recuperacao p[style*="#27ae60"] { color: #2ecc71 !important; }
+body.dark-mode #resultado-recuperacao p[style*="#e74c3c"] { color: #ff7675 !important; }
+
+
+body.dark-mode .content {
+    background-color: #212e3c;
+    background-image: none;
+}
+
+body.dark-mode .card {
+    background: #2c3e50;
+    color: #ecf0f1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .tabela-dados th, 
+body.dark-mode .tabela-dados td {
+    border-bottom: 1px solid #34495e;
+}
+
+body.dark-mode header {
+    border-bottom: 2px solid #34495e;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode textarea {
+    background-color: #34495e;
+    color: #ecf0f1;
+    border: 1px solid #4a627a;
+}
+body.dark-mode .form-group input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #95a5a6;
+}
+
+body.dark-mode .modal-content { background-color: #2c3e50; }
+body.dark-mode .modal-info h2,
+body.dark-mode .modal-info h3 { color: #fff; }
+body.dark-mode .close-button { color: #bdc3c7; }
+body.dark-mode .close-button:hover { color: #fff; }
+body.dark-mode .comentario-item { background-color: #34495e; border-left-color: #764ba2; }
+body.dark-mode .comentario-header { color: #ecf0f1; }
+body.dark-mode .comentario-texto { color: #bdc3c7; }
+body.dark-mode #texto-novo-comentario { background-color: #212e3c; border-color: #4a627a; color: #ecf0f1; }
+body.dark-mode .genero-titulo { color: #ecf0f1; border-bottom-color: #667eea; }
+body.dark-mode .livro-card { background-color: #34495e; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+body.dark-mode .livro-titulo { color: #ecf0f1; }
+body.dark-mode .sidebar { background-image: linear-gradient(rgba(26, 37, 47, 0.95), rgba(26, 37, 47, 0.95)), url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=2282&q=80'); }
+body.dark-mode .sidebar .logo { background-color: #111821; }
+body.dark-mode .suggestions-container {
+    background-color: #34495e;
+    border-color: #4a627a;
+}
+body.dark-mode .suggestion-item:hover {
+    background-color: #4a627a;
+}
+body.dark-mode .alerta-atrasos {
+    background-color: #4a3232;
+    border-color: #c0392b;
+    color: #f2d7d5;
+}
+
+body.dark-mode .alerta-atrasos h4 {
+    color: #f5b7b1;
+}
+
+body.dark-mode .destaques-titulo {
+    color: #a389d4; /* Roxo mais claro */
+}
+
+body.dark-mode .livro-card.destaque {
+    border-color: #f1c40f;
+}
+
+/* Estilos para a nova barra superior de informações */
+.top-info-bar {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #34495e;
+}
+
+.top-info-bar strong {
+    color: #f1c40f; /* Destaque em amarelo */
+}
+
+/* Estilos para a nova barra superior de informações */
+.top-info-bar {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #34495e;
+}
+
+.top-info-bar strong {
+    color: #f1c40f; /* Destaque em amarelo */
+}
+
+/* Estilo para o link do desenvolvedor na barra superior */
+.top-info-bar a {
+    color: #f1c40f;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.top-info-bar a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para o Rodapé */
+.app-footer {
+    margin-top: auto; /* Empurra o rodapé para o final do container flex */
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+body.dark-mode .app-footer {
+    border-top-color: #34495e;
+    color: #95a5a6;
+}
+
+/* Estilos para o container de sugestões (autocomplete) */
+.suggestions-container {
+    display: none; /* Começa escondido */
+    position: absolute;
+    border: 1px solid #ddd;
+    border-top: none;
+    z-index: 99;
+    background-color: white;
+    width: 100%;
+    box-sizing: border-box;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    border-radius: 0 0 6px 6px;
+}
+
+.suggestion-item {
+    padding: 12px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f2f5;
+}
+
+/* Estilos para o Alerta de Atrasos */
+.alerta-atrasos {
+    background-color: #fff2f2;
+    border: 1px solid #e74c3c;
+    border-left-width: 5px;
+}
+
+.alerta-atrasos h4 {
+    margin-top: 0;
+    color: #c0392b;
+}
+
+.alerta-atrasos ul {
+    padding-left: 25px;
+    margin-top: 10px;
+    list-style-type: '👤';
+}
+
+.alerta-atrasos li {
+    padding-left: 8px;
+    margin-bottom: 5px;
+}
+
+/* Estilos para a Seção de Destaques */
+.destaques-titulo {
+    color: #764ba2; /* Roxo do gradiente */
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.livro-card.destaque {
+    border: 2px solid #f1c40f; /* Borda dourada */
+}
+
+.destaque-badge {
+    position: absolute;
+    top: 10px;
+    left: -8px;
+    background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%); /* Gradiente dourado */
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: rotate(-5deg);
 }

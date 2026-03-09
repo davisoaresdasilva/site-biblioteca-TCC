@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Barra Superior com Informações do App -->
+    <div class="top-info-bar">
+        <div>
+            <strong>📚 BiblioTech</strong>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span><strong>Uma Biblioteca Digital:</strong> Desenvolvido por <a href="https://github.com/" target="_blank">Davi Soares</a></span>
+            <span style="margin: 0 10px; opacity: 0.5;">|</span>
+            <span><strong>Como Usar:</strong> Utilize o menu lateral para acessar Empréstimos, Livros e Alunos.</span>
+            <span style="margin: 0 10px; opacity: 0.5;">|</span>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="dark-mode-toggle">
+                    <input type="checkbox" id="dark-mode-toggle" />
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -34,16 +53,19 @@
 
             <!-- Seção de Empréstimos (Padrão) -->
             <section id="secao-emprestimos">
+                <div id="alerta-atrasos-container"></div>
                 <div class="card">
                     <h3>Novo Empréstimo</h3>
                     <form id="form-emprestimo">
                         <div class="form-group">
                             <label for="input-aluno">Aluno</label>
-                            <input type="text" id="input-aluno" placeholder="Nome ou Matrícula" required>
+                            <input type="text" id="input-aluno" placeholder="Clique e digite para buscar..." required autocomplete="off">
+                            <div id="aluno-suggestions" class="suggestions-container"></div>
                         </div>
                         <div class="form-group">
                             <label for="input-livro">Livro</label>
-                            <input type="text" id="input-livro" placeholder="Título ou ISBN" required>
+                            <input type="text" id="input-livro" placeholder="Clique e digite para buscar..." required autocomplete="off">
+                            <div id="livro-suggestions" class="suggestions-container"></div>
                         </div>
                         <button type="submit" class="btn-primary">Registrar Saída</button>
                     </form>
@@ -72,7 +94,7 @@
             <section id="secao-livros" style="display: none;">
                 <div id="form-livro-container" style="display: none;">
                     <div class="card">
-                        <h3>Cadastrar Novo Livro (Admin)</h3>
+                        <h3>Cadastrar Novo Livro (Administrador)</h3>
                         <form id="form-livro">
                             <div class="form-group">
                                 <label>Título</label>
@@ -81,6 +103,14 @@
                             <div class="form-group">
                                 <label>Gênero</label>
                                 <input type="text" id="input-genero-livro" placeholder="Ex: Fantasia" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Descrição</label>
+                                <textarea id="input-descricao-livro" placeholder="Descrição do livro" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Ano de Lançamento</label>
+                                <input type="number" id="input-ano-livro" placeholder="Ano de lançamento" required>
                             </div>
                             <div class="form-group">
                                 <label>URL da Capa</label>
@@ -94,6 +124,7 @@
                         </form>
                     </div>
                 </div>
+                <div id="destaques-do-mes-container"></div>
                 <div id="livros-gallery"></div>
             </section>
 
@@ -131,6 +162,11 @@
                     </table>
                 </div>
             </section>
+
+            <!-- Rodapé -->
+            <footer class="app-footer">
+                <p>&copy; <span id="copyright-year">2024</span> BiblioTech. Todos os direitos reservados.</p>
+            </footer>
         </main>
         </div>
     <script src="script.js"></script>
@@ -144,10 +180,12 @@
                 <div class="modal-info">
                     <h2 id="modal-titulo-livro"></h2>
                     <p id="modal-genero-livro"></p>
-                    <h3>Descrição</h3>
+                    <p id="modal-ano-livro"></p>
+                    <div id="modal-status-livro" style="margin: 15px 0;"></div>
+                    <div id="modal-botao-container"></div>
+                    <h3 style="margin-top: 20px;">Descrição</h3>
                     <p id="modal-descricao-livro"></p>
-                    <h3>Resumo</h3>
-                    <p id="modal-resumo-livro"></p>
+                    <div id="modal-comentarios-section"></div>
                 </div>
             </div>
         </div>

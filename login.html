@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BiblioTech - Login</title>
+    <title>BiblioTech - Acesso</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Importando fontes elegantes do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -21,8 +21,16 @@
 
             <!-- Lado do Formulário -->
             <div class="login-form-side">
+                <!-- Botão de Modo Noturno -->
+                <div class="theme-switch-wrapper" style="position: absolute; top: 20px; right: 20px;">
+                    <label class="theme-switch" for="dark-mode-toggle">
+                        <input type="checkbox" id="dark-mode-toggle" />
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
                 <div class="login-header">
-                    <h1>Login</h1>
+                    <h1>Acessar</h1>
                     <p>Acesse o portal de gestão do conhecimento.</p>
                 </div>
                 
@@ -41,10 +49,40 @@
                 </form>
                 
                 <div class="login-footer">
-                    <a href="#">Esqueci minha senha</a>
+                    <a href="#" onclick="abrirModalRecuperarSenha(event)">Esqueci minha senha</a>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal de Recuperação de Senha -->
+    <div id="recuperar-senha-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <span class="close-button" onclick="fecharModalRecuperarSenha()">&times;</span>
+            <h2>Recuperar Senha</h2>
+            <p>Informe sua matrícula para encontrar sua senha.</p>
+            <form onsubmit="recuperarSenha(event)">
+                <div class="form-group">
+                    <label for="matricula-recuperar">Usuário / Matrícula</label>
+                    <input type="text" id="matricula-recuperar" placeholder="Sua matrícula" required>
+                </div>
+                <button type="submit" class="btn-primary full-width">Recuperar</button>
+            </form>
+            <div id="resultado-recuperacao" style="margin-top: 20px; text-align: center;"></div>
+        </div>
+    </div>
+
+    <!-- Tela de Carregamento com Animação de Livro -->
+    <div id="loading-overlay">
+        <div class="book">
+            <div class="book__pg-shadow"></div>
+            <div class="book__pg"></div>
+            <div class="book__pg book__pg--2"></div>
+            <div class="book__pg book__pg--3"></div>
+            <div class="book__pg book__pg--4"></div>
+            <div class="book__pg book__pg--5"></div>
+        </div>
+        <p>Verificando, aguarde...</p>
     </div>
 
     <script>
@@ -68,8 +106,72 @@
         fraseEl.textContent = `"${frases[indiceAleatorio].texto}"`;
         autorEl.textContent = `– ${frases[indiceAleatorio].autor}`;
 
+        // --- Lógica do Modo Noturno ---
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Aplica o tema ao carregar a página
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (darkModeToggle) darkModeToggle.checked = true;
+        }
+
+        // Adiciona o evento de clique ao botão
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('change', toggleDarkMode);
+        }
+        // --- Fim da Lógica do Modo Noturno ---
+
+        // --- Lógica de Recuperação de Senha ---
+        // OBS: A lista de alunos é duplicada aqui para a simulação,
+        // pois a página de login não carrega o script.js principal.
+        const mockAlunos = [
+            { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123' },
+            { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456' },
+            { id: 3, nome: 'Davi Soares', matricula: 'admin', senha: 'admin' }
+        ];
+
+        const modalRecuperar = document.getElementById('recuperar-senha-modal');
+        const resultadoRecuperacaoEl = document.getElementById('resultado-recuperacao');
+
+        function abrirModalRecuperarSenha(event) {
+            event.preventDefault();
+            resultadoRecuperacaoEl.innerHTML = ''; // Limpa resultados anteriores
+            document.getElementById('matricula-recuperar').value = ''; // Limpa input
+            modalRecuperar.style.display = 'flex';
+        }
+
+        function fecharModalRecuperarSenha() {
+            modalRecuperar.style.display = 'none';
+        }
+
+        function recuperarSenha(event) {
+            event.preventDefault();
+            const matricula = document.getElementById('matricula-recuperar').value;
+            const alunoEncontrado = mockAlunos.find(aluno => aluno.matricula.toLowerCase() === matricula.toLowerCase());
+
+            if (alunoEncontrado) {
+                resultadoRecuperacaoEl.innerHTML = `<p style="color: #27ae60; font-weight: bold;">Usuário encontrado! Sua senha é: <strong>${alunoEncontrado.senha}</strong></p>`;
+            } else {
+                resultadoRecuperacaoEl.innerHTML = `<p style="color: #e74c3c; font-weight: bold;">Usuário não encontrado. Verifique a matrícula e tente novamente.</p>`;
+            }
+        }
+
+        // Fecha o modal se clicar fora dele
+        window.addEventListener('click', (event) => { if (event.target == modalRecuperar) fecharModalRecuperarSenha(); });
+        // --- Fim da Lógica de Recuperação de Senha ---
+
         function realizarLogin(event) {
             event.preventDefault();
+
+            // Mostra a tela de carregamento
+            document.getElementById('loading-overlay').style.display = 'flex';
+
             // Simulação de autenticação
             const usuario = document.getElementById('usuario').value;
             const senha = document.getElementById('senha').value;
@@ -82,8 +184,11 @@
 
             localStorage.setItem('usuarioLogado', usuario);
             localStorage.setItem('userRole', role); // Salva o papel do usuário
-            // Simula o login redirecionando para o painel principal
-            window.location.href = "index.html";
+
+            // Simula uma verificação de 2 segundos e depois redireciona
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 2000);
         }
     </script>
 </body>

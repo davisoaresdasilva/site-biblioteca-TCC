@@ -14,9 +14,9 @@
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <span><strong>Uma Biblioteca Digital:</strong> Desenvolvido por <a href="https://github.com/" target="_blank">Davi Soares</a></span>
-            <span style="margin: 0 10px; opacity: 0.5;">|</span>
+            <span class="info-separator">|</span>
             <span><strong>Como Usar:</strong> Utilize o menu lateral para acessar Empréstimos, Livros e Alunos.</span>
-            <span style="margin: 0 10px; opacity: 0.5;">|</span>
+            <span class="info-separator">|</span>
             <div class="theme-switch-wrapper">
                 <label class="theme-switch" for="dark-mode-toggle">
                     <input type="checkbox" id="dark-mode-toggle" />
@@ -47,7 +47,7 @@
                 <h1>Painel de Controle</h1>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div id="usuario-logado"></div>
-                    <button onclick="logout()" style="padding: 8px 15px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Sair</button>
+                    <button onclick="logout()" class="btn-logout">Sair</button>
                 </div>
             </header>
 
@@ -66,6 +66,10 @@
                             <label for="input-livro">Livro</label>
                             <input type="text" id="input-livro" placeholder="Clique e digite para buscar..." required autocomplete="off">
                             <div id="livro-suggestions" class="suggestions-container"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-senha-emprestimo">Senha do Aluno</label>
+                            <input type="password" id="input-senha-emprestimo" placeholder="Confirme a senha do aluno" required>
                         </div>
                         <button type="submit" class="btn-primary">Registrar Saída</button>
                     </form>
@@ -98,19 +102,16 @@
                         <form id="form-livro">
                             <div class="form-group">
                                 <label>Título</label>
-                                <input type="text" id="input-titulo-livro" placeholder="Título do Livro" required>
+                                <input type="text" id="input-titulo-livro" placeholder="Digite para buscar livros na web..." required autocomplete="off">
+                                <div id="livro-search-suggestions" class="suggestions-container"></div>
                             </div>
                             <div class="form-group">
                                 <label>Gênero</label>
                                 <input type="text" id="input-genero-livro" placeholder="Ex: Fantasia" required>
                             </div>
                             <div class="form-group">
-                                <label>Descrição</label>
-                                <textarea id="input-descricao-livro" placeholder="Descrição do livro" required></textarea>
-                            </div>
-                            <div class="form-group">
                                 <label>Ano de Lançamento</label>
-                                <input type="number" id="input-ano-livro" placeholder="Ano de lançamento" required>
+                                <input type="number" id="input-ano-livro" placeholder="Ex: 2023" required>
                             </div>
                             <div class="form-group">
                                 <label>URL da Capa</label>
@@ -183,11 +184,33 @@
                     <p id="modal-ano-livro"></p>
                     <div id="modal-status-livro" style="margin: 15px 0;"></div>
                     <div id="modal-botao-container"></div>
-                    <h3 style="margin-top: 20px;">Descrição</h3>
-                    <p id="modal-descricao-livro"></p>
                     <div id="modal-comentarios-section"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Aluno -->
+    <div id="aluno-edicao-modal" class="modal" onclick="fecharModalEdicaoAluno()">
+        <div class="modal-content" style="max-width: 500px;" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="fecharModalEdicaoAluno()">&times;</span>
+            <h2>Editar Aluno</h2>
+            <form id="form-edicao-aluno" onsubmit="salvarEdicaoAluno(event)">
+                <input type="hidden" id="edit-aluno-id">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="edit-nome-aluno" placeholder="Nome completo" required>
+                </div>
+                <div class="form-group">
+                    <label>Matrícula</label>
+                    <input type="text" id="edit-matricula-aluno" placeholder="Ex: RA1234" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="edit-senha-aluno" placeholder="Deixe em branco para não alterar">
+                </div>
+                <button type="submit" class="btn-primary">Salvar Alterações</button>
+            </form>
         </div>
     </div>
 </body>

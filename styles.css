@@ -137,6 +137,52 @@ header #usuario-logado {
     background-color: #c0392b;
 }
 
+/* Botão de Edição na Tabela */
+.btn-editar {
+    background-color: #3498db; /* Azul */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin-right: 5px; /* Espaçamento entre botões */
+}
+.btn-editar:hover { background-color: #2980b9; }
+
+/* Botão de Logout no Header */
+.btn-logout {
+    padding: 8px 15px;
+    background-color: #c0392b; /* Vermelho mais sóbrio */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+.btn-logout:hover {
+    background-color: #e74c3c; /* Vermelho mais claro no hover */
+}
+
+/* Estilos para botões de ação na tabela */
+.btn-acao {
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    margin-right: 8px;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0;
+}
+.btn-devolver { color: #2980b9; } /* Azul */
+.btn-atrasado { color: #d35400; } /* Laranja */
+.btn-reabrir { color: #27ae60; } /* Verde */
+
 /* Tabela */
 .tabela-dados {
     width: 100%;
@@ -152,6 +198,23 @@ header #usuario-logado {
 
 .status-atrasado { color: #e74c3c; font-weight: bold; }
 .status-aberto { color: #2980b9; font-weight: bold; }
+.status-concluido { color: #28a745; font-weight: bold; }
+
+/* Status de disponibilidade nos cards de livro */
+.status-disponivel, .status-indisponivel {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.status-disponivel {
+    color: #27ae60; /* Verde */
+}
+
+.status-indisponivel {
+    color: #c0392b; /* Vermelho */
+}
 
 /* Miniatura da capa na tabela de empréstimos */
 .capa-miniatura {
@@ -364,7 +427,8 @@ header #usuario-logado {
 .livro-capa {
     width: 100%;
     height: 240px;
-    object-fit: contain;
+    object-fit: contain; /* Garante que toda a capa seja visível */
+    background-color: #f0f2f5; /* Fundo para preencher espaços vazios */
     border-radius: 6px;
     /* Sombra mais elaborada para dar profundidade */
     box-shadow: 
@@ -428,6 +492,11 @@ header #usuario-logado {
 
 .btn-solicitar:hover {
     background-color: #5a6fd6;
+}
+
+.btn-solicitar:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
 }
 
 /* Estilos do Modal */
@@ -839,6 +908,10 @@ body.dark-mode .tabela-dados td {
     border-bottom: 1px solid #34495e;
 }
 
+body.dark-mode .tabela-dados th {
+    background-color: #34495e;
+}
+
 body.dark-mode header {
     border-bottom: 2px solid #34495e;
 }
@@ -854,6 +927,19 @@ body.dark-mode textarea::placeholder {
     color: #95a5a6;
 }
 
+body.dark-mode .status-atrasado { color: #ff7675; }
+body.dark-mode .status-aberto { color: #5dade2; }
+body.dark-mode .status-concluido { color: #58d68d; }
+
+/* Cores de status de disponibilidade em modo escuro */
+body.dark-mode .status-disponivel {
+    color: #2ecc71; /* Verde mais vibrante */
+}
+
+body.dark-mode .status-indisponivel {
+    color: #ff7675; /* Vermelho mais claro */
+}
+
 body.dark-mode .modal-content { background-color: #2c3e50; }
 body.dark-mode .modal-info h2,
 body.dark-mode .modal-info h3 { color: #fff; }
@@ -867,6 +953,23 @@ body.dark-mode .genero-titulo { color: #ecf0f1; border-bottom-color: #667eea; }
 body.dark-mode .livro-card { background-color: #34495e; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 body.dark-mode .livro-titulo { color: #ecf0f1; }
 body.dark-mode .sidebar { background-image: linear-gradient(rgba(26, 37, 47, 0.95), rgba(26, 37, 47, 0.95)), url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=2282&q=80'); }
+
+body.dark-mode .btn-devolver { color: #5dade2; }
+body.dark-mode .btn-atrasado { color: #f39c12; }
+body.dark-mode .btn-reabrir { color: #58d68d; }
+
+body.dark-mode .btn-editar { background-color: #5dade2; }
+body.dark-mode .btn-editar:hover { background-color: #85c1e9; }
+
+body.dark-mode .btn-solicitar:disabled {
+    background-color: #566573;
+    color: #95a5a6;
+    opacity: 0.7;
+}
+
+body.dark-mode .livro-capa {
+    background-color: #2c3e50; /* Fundo para capas no modo escuro */
+}
 body.dark-mode .sidebar .logo { background-color: #111821; }
 body.dark-mode .suggestions-container {
     background-color: #34495e;
@@ -895,45 +998,52 @@ body.dark-mode .livro-card.destaque {
 
 /* Estilos para a nova barra superior de informações */
 .top-info-bar {
-    background-color: #2c3e50;
-    color: #ecf0f1;
+    background-color: #eef1f5; /* Cor clara para modo padrão */
+    color: #34495e;
     padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 0.9rem;
-    border-bottom: 1px solid #34495e;
+    border-bottom: 1px solid #ddd;
+}
+
+.info-separator {
+    margin: 0 10px;
+    opacity: 0.5;
 }
 
 .top-info-bar strong {
-    color: #f1c40f; /* Destaque em amarelo */
-}
-
-/* Estilos para a nova barra superior de informações */
-.top-info-bar {
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    border-bottom: 1px solid #34495e;
-}
-
-.top-info-bar strong {
-    color: #f1c40f; /* Destaque em amarelo */
+    color: #764ba2; /* Roxo para destaque em modo claro */
 }
 
 /* Estilo para o link do desenvolvedor na barra superior */
 .top-info-bar a {
-    color: #f1c40f;
+    color: #764ba2; /* Roxo para link em modo claro */
     text-decoration: none;
     font-weight: bold;
 }
 
 .top-info-bar a:hover {
     text-decoration: underline;
+}
+
+body.dark-mode .top-info-bar {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    border-bottom: 1px solid #34495e;
+}
+
+body.dark-mode .top-info-bar strong {
+    color: #f1c40f;
+}
+
+body.dark-mode .top-info-bar a {
+    color: #f1c40f;
+}
+
+body.dark-mode .info-separator {
+    opacity: 0.4;
 }
 
 /* Estilos para o Rodapé */

@@ -33,10 +33,32 @@ let livros = JSON.parse(localStorage.getItem('livros')) || [
     { id: 18, titulo: 'A Metamorfose', genero: 'Ficção', capa: 'https://m.media-amazon.com/images/I/71ss5-d18RL._SL1500_.jpg', estoque: 4, ano: 1915 }
 ];
 
+// Função para renderizar alertas de livros atrasados
+function renderizarAlertasDeAtraso() {
+    const container = document.getElementById('alerta-atrasos-container');
+    const atrasados = emprestimos.filter(e => e.status === 'ATRASADO');
+
+    container.innerHTML = ''; // Limpa alertas antigos
+
+    if (atrasados.length > 0) {
+        const listaHtml = atrasados.map(e => `<li><strong>${e.aluno}</strong> com o livro <em>"${e.livro}"</em>.</li>`).join('');
+
+        const alertaHtml = `
+            <div class="card alerta-atrasos">
+                <h4>Atenção: Livros Atrasados!</h4>
+                <p>Os seguintes alunos estão com devoluções pendentes:</p>
+                <ul>${listaHtml}</ul>
+            </div>
+        `;
+        container.innerHTML = alertaHtml;
+    }
+}
+
 // Função para renderizar a tabela
 function renderizarTabela() {
     // Salva os dados no localStorage para persistência
     localStorage.setItem('emprestimos', JSON.stringify(emprestimos));
+    renderizarAlertasDeAtraso(); // Atualiza os alertas de atraso
 
     const tbody = document.getElementById('tabela-emprestimos-body');
     tbody.innerHTML = '';
@@ -534,14 +556,6 @@ if (document.getElementById('form-livro')) {
     inputTituloLivro.addEventListener('input', (e) => {
         debouncedSearch(e.target.value);
     });
-
-    // Esconde as sugestões se o usuário clicar fora da área
-    document.addEventListener('click', function(e) {
-        const suggestionsContainer = document.getElementById('livro-search-suggestions');
-        if (suggestionsContainer && !suggestionsContainer.contains(e.target) && e.target.id !== 'input-titulo-livro') {
-            suggestionsContainer.style.display = 'none';
-        }
-    });
 }
 
 
@@ -622,4 +636,87 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
     }
+
+    // --- Autocomplete para formulário de empréstimo ---
+    const inputAluno = document.getElementById('input-aluno');
+    const inputLivroEmprestimo = document.getElementById('input-livro');
+
+    // Lógica para Alunos
+    if (inputAluno) {
+        const debouncedAlunoSearch = debounce((query) => {
+            const suggestionsContainer = document.getElementById('aluno-suggestions');
+            if (!query || query.length < 1) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+            const sugestoesFiltradas = alunos.filter(aluno =>
+                aluno.nome.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            suggestionsContainer.innerHTML = '';
+            if (sugestoesFiltradas.length > 0) {
+                sugestoesFiltradas.forEach(aluno => {
+                    const suggestionDiv = document.createElement('div');
+                    suggestionDiv.className = 'suggestion-item';
+                    suggestionDiv.textContent = aluno.nome;
+                    suggestionDiv.onclick = () => {
+                        inputAluno.value = aluno.nome;
+                        suggestionsContainer.style.display = 'none';
+                    };
+                    suggestionsContainer.appendChild(suggestionDiv);
+                });
+                suggestionsContainer.style.display = 'block';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        }, 300);
+
+        inputAluno.addEventListener('input', (e) => {
+            debouncedAlunoSearch(e.target.value);
+        });
+    }
+
+    // Lógica para Livros (no empréstimo)
+    if (inputLivroEmprestimo) {
+        const debouncedLivroSearch = debounce((query) => {
+            const suggestionsContainer = document.getElementById('livro-suggestions');
+            if (!query || query.length < 1) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+            const sugestoesFiltradas = livros.filter(livro =>
+                livro.titulo.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            suggestionsContainer.innerHTML = '';
+            if (sugestoesFiltradas.length > 0) {
+                sugestoesFiltradas.forEach(livro => {
+                    const suggestionDiv = document.createElement('div');
+                    suggestionDiv.className = 'suggestion-item';
+                    suggestionDiv.textContent = livro.titulo;
+                    suggestionDiv.onclick = () => {
+                        inputLivroEmprestimo.value = livro.titulo;
+                        suggestionsContainer.style.display = 'none';
+                    };
+                    suggestionsContainer.appendChild(suggestionDiv);
+                });
+                suggestionsContainer.style.display = 'block';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        }, 300);
+
+        inputLivroEmprestimo.addEventListener('input', (e) => {
+            debouncedLivroSearch(e.target.value);
+        });
+    }
+
+    // Esconde as sugestões se o usuário clicar fora da área
+    document.addEventListener('click', function(e) {
+        document.querySelectorAll('.suggestions-container').forEach(container => {
+            if (!container.parentElement.contains(e.target)) {
+                container.style.display = 'none';
+            }
+        });
+    });
 });

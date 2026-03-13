@@ -59,11 +59,11 @@
     <div id="recuperar-senha-modal" class="modal">
         <div class="modal-content" style="max-width: 450px;">
             <span class="close-button" onclick="fecharModalRecuperarSenha()">&times;</span>
-            <h2>Recuperar Senha</h2>
-            <p>Informe sua matrícula para encontrar sua senha.</p>
+            <h2>Redefinir Senha</h2>
+            <p>Informe sua matrícula ou e-mail para iniciar a redefinição. (Simulação)</p>
             <form onsubmit="recuperarSenha(event)">
                 <div class="form-group">
-                    <label for="matricula-recuperar">Usuário / Matrícula</label>
+                    <label for="matricula-recuperar">Matrícula ou E-mail</label>
                     <input type="text" id="matricula-recuperar" placeholder="Sua matrícula" required>
                 </div>
                 <button type="submit" class="btn-primary full-width">Recuperar</button>
@@ -131,9 +131,9 @@
         // OBS: A lista de alunos é duplicada aqui para a simulação,
         // pois a página de login não carrega o script.js principal.
         const mockAlunos = [
-            { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123' },
-            { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456' },
-            { id: 3, nome: 'Davi Soares', matricula: 'admin', senha: 'admin' }
+            { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123', email: 'maria.o@email.com' },
+            { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456', email: 'pedro.s@email.com' },
+            { id: 3, nome: 'Davi Soares', matricula: 'admin', senha: 'admin', email: 'davi.s@email.com' }
         ];
 
         const modalRecuperar = document.getElementById('recuperar-senha-modal');
@@ -152,11 +152,13 @@
 
         function recuperarSenha(event) {
             event.preventDefault();
-            const matricula = document.getElementById('matricula-recuperar').value;
-            const alunoEncontrado = mockAlunos.find(aluno => aluno.matricula.toLowerCase() === matricula.toLowerCase());
+            const identificador = document.getElementById('matricula-recuperar').value.toLowerCase();
+            const alunoEncontrado = mockAlunos.find(aluno => 
+                aluno.matricula.toLowerCase() === identificador || 
+                (aluno.email && aluno.email.toLowerCase() === identificador));
 
-            if (alunoEncontrado) {
-                resultadoRecuperacaoEl.innerHTML = `<p style="color: #27ae60; font-weight: bold;">Usuário encontrado! Sua senha é: <strong>${alunoEncontrado.senha}</strong></p>`;
+            if (alunoEncontrado && alunoEncontrado.email) {
+                resultadoRecuperacaoEl.innerHTML = `<p style="color: #27ae60; font-weight: bold;">Instruções para redefinir a senha foram enviadas para o e-mail: <strong>${alunoEncontrado.email}</strong></p>`;
             } else {
                 resultadoRecuperacaoEl.innerHTML = `<p style="color: #e74c3c; font-weight: bold;">Usuário não encontrado. Verifique a matrícula e tente novamente.</p>`;
             }

@@ -6,9 +6,9 @@ let emprestimos = JSON.parse(localStorage.getItem('emprestimos')) || [
 
 // Dados simulados de alunos
 let alunos = JSON.parse(localStorage.getItem('alunos')) || [
-    { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123' },
-    { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456' },
-    { id: 3, nome: 'Davi Soares', matricula: 'admin', senha: 'admin' }
+    { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123', email: 'maria.o@email.com', telefone: '(11) 98765-4321' },
+    { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456', email: 'pedro.s@email.com', telefone: '(21) 91234-5678' },
+    { id: 3, nome: 'Davi Soares', matricula: 'admin', senha: 'admin', email: 'davi.s@email.com', telefone: '(31) 99999-8888' }
 ];
 
 // Dados simulados de livros com capa e gênero
@@ -198,9 +198,15 @@ function excluirAluno(id) {
 }
 
 // Função para renderizar a tabela de alunos
-function renderizarTabelaAlunos() {
+function renderizarTabelaAlunos(termoBusca = '') {
     // Salva a lista atualizada no localStorage
     localStorage.setItem('alunos', JSON.stringify(alunos));
+
+    // Filtragem baseada na busca
+    const alunosFiltrados = alunos.filter(a => 
+        a.nome.toLowerCase().includes(termoBusca.toLowerCase()) || 
+        a.matricula.toLowerCase().includes(termoBusca.toLowerCase())
+    );
 
     const tbody = document.getElementById('tabela-alunos-body');
     const thead = document.getElementById('tabela-alunos-head');
@@ -212,7 +218,9 @@ function renderizarTabelaAlunos() {
 
     // Constrói o cabeçalho da tabela dinamicamente
     let headerHtml = `<tr><th>Nome</th><th>Matrícula</th>`;
+    headerHtml += `<th>Situação</th>`; // Nova coluna
     if (isAdmin) {
+        headerHtml += `<th>Contato</th>`;
         headerHtml += `<th>Senha (Visível para Admin)</th>`;
         headerHtml += `<th>Ações</th>`;
     }
@@ -220,11 +228,30 @@ function renderizarTabelaAlunos() {
     thead.innerHTML = headerHtml;
 
     // Preenche o corpo da tabela
-    alunos.forEach(aluno => {
-        let rowHtml = `<td>${aluno.nome}</td><td>${aluno.matricula}</td>`;
+    alunosFiltrados.forEach(aluno => {
+        // Verifica pendências
+        const pendencias = emprestimos.filter(e => e.aluno === aluno.nome && e.status === 'ATRASADO').length;
+        const ativos = emprestimos.filter(e => e.aluno === aluno.nome && e.status === 'ABERTO').length;
+        
+        let statusBadge = '<span class="badge badge-ok">Regular</span>';
+        
+        if (pendencias > 0) {
+            statusBadge = `<span class="badge badge-erro" title="${pendencias} livros atrasados!">${pendencias} Atrasado(s)</span>`;
+        } else if (ativos > 0) {
+            statusBadge = `<span class="badge badge-info" title="${ativos} livros com o aluno">${ativos} Empréstimo(s)</span>`;
+        }
+
+        let rowHtml = `<td data-label="Nome">${aluno.nome}</td><td data-label="Matrícula">${aluno.matricula}</td>`;
+        rowHtml += `<td data-label="Situação">${statusBadge}</td>`;
+        
         if (isAdmin) {
-            rowHtml += `<td>${aluno.senha}</td>`;
-            rowHtml += `<td>
+            const emailLink = aluno.email ? `<a href="mailto:${aluno.email}" class="link-contato">${aluno.email}</a>` : 'N/A';
+            const telefoneLink = aluno.telefone ? `<a href="tel:${aluno.telefone}" class="link-contato">${aluno.telefone}</a>` : 'N/A';
+            rowHtml += `<td data-label="Contato">${emailLink}<br>${telefoneLink}</td>`;
+
+            rowHtml += `<td data-label="Senha">${aluno.senha} <button class="btn-copiar" onclick="copiarTexto('${aluno.senha}')" title="Copiar senha">📋</button></td>`;
+            rowHtml += `<td data-label="Ações" class="coluna-acoes">
+                            <button class="btn-acao btn-devolver" onclick="verHistoricoAluno(${aluno.id})" title="Ver Histórico">📜</button>
                             <button class="btn-editar" onclick="abrirModalEdicaoAluno(${aluno.id})">Editar</button>
                             <button class="btn-excluir" onclick="excluirAluno(${aluno.id})">Excluir</button>
                         </td>`;
@@ -233,7 +260,7 @@ function renderizarTabelaAlunos() {
     });
 
     // Atualiza a contagem total
-    totalAlunosEl.textContent = `Total de Alunos: ${alunos.length}`;
+    totalAlunosEl.textContent = `Exibindo ${alunosFiltrados.length} de ${alunos.length} alunos`;
 }
 
 // Função para cadastrar novo aluno
@@ -243,20 +270,132 @@ if (document.getElementById('form-aluno')) {
         
         const nome = document.getElementById('input-nome-aluno').value;
         const matricula = document.getElementById('input-matricula-aluno').value;
+        const telefone = document.getElementById('input-telefone-aluno').value;
+        const email = document.getElementById('input-email-aluno').value;
         const senha = document.getElementById('input-senha-aluno').value;
 
         const novoAluno = {
-            id: alunos.length + 1,
+            // Gera um ID único e seguro para evitar colisões
+            id: alunos.length > 0 ? Math.max(...alunos.map(a => a.id)) + 1 : 1,
             nome: nome,
             matricula: matricula,
+            telefone: telefone,
+            email: email,
             senha: senha
         };
 
         alunos.push(novoAluno);
         renderizarTabelaAlunos();
+        fecharModalCadastroAluno(); // Fecha o modal após cadastrar
         this.reset();
         alert('Aluno cadastrado com sucesso!');
     });
+}
+
+// --- Função de Exportar para CSV ---
+function exportarAlunosCSV() {
+    if (alunos.length === 0) {
+        alert("Não há alunos para exportar.");
+        return;
+    }
+
+    // Cabeçalho do CSV
+    let csvContent = "data:text/csv;charset=utf-8,ID,Nome,Matricula,Email,Telefone\n";
+
+    // Linhas
+    alunos.forEach(aluno => {
+        csvContent += `${aluno.id},"${aluno.nome}","${aluno.matricula}","${aluno.email || ''}","${aluno.telefone || ''}"\n`;
+    });
+
+    // Criação do link de download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "lista_alunos_bibliotech.csv");
+    document.body.appendChild(link); // Necessário para Firefox
+    link.click();
+    document.body.removeChild(link);
+}
+
+// --- Função Utilitária para Copiar Texto ---
+function copiarTexto(texto) {
+    navigator.clipboard.writeText(texto).then(() => {
+        alert("Senha copiada para a área de transferência!");
+    }).catch(err => {
+        console.error('Erro ao copiar: ', err);
+        // Fallback simples
+        const tempInput = document.createElement("input");
+        tempInput.value = texto;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        alert("Senha copiada!");
+    });
+}
+
+// --- Função de Busca de Alunos ---
+function filtrarAlunos() {
+    const termo = document.getElementById('busca-aluno-input').value;
+    renderizarTabelaAlunos(termo);
+}
+
+// --- Funções de Histórico do Aluno ---
+function verHistoricoAluno(id) {
+    const aluno = alunos.find(a => a.id === id);
+    if (!aluno) return;
+
+    const modal = document.getElementById('historico-aluno-modal');
+    const titulo = document.getElementById('titulo-historico-aluno');
+    const conteudo = document.getElementById('conteudo-historico-aluno');
+
+    titulo.textContent = `Histórico: ${aluno.nome}`;
+
+    // Filtra empréstimos deste aluno
+    const historico = emprestimos.filter(e => e.aluno === aluno.nome);
+
+    if (historico.length === 0) {
+        conteudo.innerHTML = '<p>Nenhum empréstimo registrado para este aluno.</p>';
+    } else {
+        let html = `
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>Livro</th>
+                        <th>Retirada</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        historico.forEach(h => {
+            const dataRet = new Date(h.retirada + 'T00:00:00').toLocaleDateString('pt-BR');
+            html += `
+                <tr>
+                    <td>${h.livro}</td>
+                    <td>${dataRet}</td>
+                    <td><span class="${h.status === 'ATRASADO' ? 'status-atrasado' : (h.status === 'CONCLUIDO' ? 'status-concluido' : 'status-aberto')}">${h.status}</span></td>
+                </tr>`;
+        });
+        html += '</tbody></table>';
+        conteudo.innerHTML = html;
+    }
+
+    modal.style.display = 'flex';
+}
+
+function fecharModalHistorico() {
+    document.getElementById('historico-aluno-modal').style.display = 'none';
+}
+
+// --- Funções do Modal de Cadastro (Novo) ---
+function abrirModalCadastroAluno() {
+    document.getElementById('aluno-cadastro-modal').style.display = 'flex';
+    document.getElementById('input-nome-aluno').focus();
+}
+
+function fecharModalCadastroAluno() {
+    document.getElementById('aluno-cadastro-modal').style.display = 'none';
 }
 
 // --- Funções de Edição de Aluno ---
@@ -269,6 +408,8 @@ function abrirModalEdicaoAluno(id) {
     document.getElementById('edit-aluno-id').value = aluno.id;
     document.getElementById('edit-nome-aluno').value = aluno.nome;
     document.getElementById('edit-matricula-aluno').value = aluno.matricula;
+    document.getElementById('edit-telefone-aluno').value = aluno.telefone || '';
+    document.getElementById('edit-email-aluno').value = aluno.email || '';
     document.getElementById('edit-senha-aluno').value = ''; // Limpa o campo de senha por segurança
 
     // Exibe o modal
@@ -285,6 +426,8 @@ function salvarEdicaoAluno(event) {
     const id = parseInt(document.getElementById('edit-aluno-id').value);
     const nome = document.getElementById('edit-nome-aluno').value;
     const matricula = document.getElementById('edit-matricula-aluno').value;
+    const telefone = document.getElementById('edit-telefone-aluno').value;
+    const email = document.getElementById('edit-email-aluno').value;
     const senha = document.getElementById('edit-senha-aluno').value;
 
     const alunoIndex = alunos.findIndex(a => a.id === id);
@@ -292,6 +435,8 @@ function salvarEdicaoAluno(event) {
 
     alunos[alunoIndex].nome = nome;
     alunos[alunoIndex].matricula = matricula;
+    alunos[alunoIndex].telefone = telefone;
+    alunos[alunoIndex].email = email;
     
     // Atualiza a senha apenas se um novo valor for inserido
     if (senha.trim() !== '') {

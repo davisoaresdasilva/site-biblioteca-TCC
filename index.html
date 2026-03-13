@@ -132,27 +132,15 @@
             <!-- Seção de Alunos -->
             <section id="secao-alunos" style="display: none;">
                 <div class="card">
-                    <h3>Cadastrar Novo Aluno</h3>
-                    <form id="form-aluno">
-                        <div class="form-group">
-                            <label>Nome</label>
-                            <input type="text" id="input-nome-aluno" placeholder="Nome completo" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Matrícula</label>
-                            <input type="text" id="input-matricula-aluno" placeholder="Ex: RA1234" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Senha</label>
-                            <input type="password" id="input-senha-aluno" placeholder="Senha de acesso" required>
-                        </div>
-                        <button type="submit" class="btn-primary">Cadastrar Aluno</button>
-                    </form>
-                </div>
-
-                <div class="card">
                     <h2>Alunos Vinculados</h2>
-                    <p id="total-alunos">Total de Alunos: 0</p>
+                    
+                    <!-- Barra de Ações (Busca + Exportar) -->
+                    <div class="actions-bar" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+                        <input type="text" id="busca-aluno-input" placeholder="🔍 Buscar aluno por nome ou matrícula..." onkeyup="filtrarAlunos()">
+                        <button class="btn-exportar" onclick="exportarAlunosCSV()" title="Baixar lista em Excel/CSV">📥 Exportar</button>
+                    </div>
+
+                    <p id="total-alunos" style="margin-bottom: 10px; font-weight: bold; color: #7f8c8d;">Total de Alunos: 0</p>
                     <table class="tabela-dados">
                         <thead id="tabela-alunos-head">
                             <!-- Cabeçalho gerado via JS -->
@@ -162,6 +150,9 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Botão Flutuante (FAB) para Adicionar Aluno -->
+                <button class="fab-btn" onclick="abrirModalCadastroAluno()" title="Cadastrar Novo Aluno">+</button>
             </section>
 
             <!-- Rodapé -->
@@ -190,6 +181,48 @@
         </div>
     </div>
 
+    <!-- Modal de Histórico do Aluno -->
+    <div id="historico-aluno-modal" class="modal" onclick="fecharModalHistorico()">
+        <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="fecharModalHistorico()">&times;</span>
+            <h2 id="titulo-historico-aluno">Histórico do Aluno</h2>
+            <div id="conteudo-historico-aluno" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                <!-- Tabela preenchida via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro de Aluno (Movido para cá) -->
+    <div id="aluno-cadastro-modal" class="modal" onclick="fecharModalCadastroAluno()">
+        <div class="modal-content" style="max-width: 500px;" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="fecharModalCadastroAluno()">&times;</span>
+            <h2>Cadastrar Novo Aluno</h2>
+            <form id="form-aluno">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="input-nome-aluno" placeholder="Nome completo" required>
+                </div>
+                <div class="form-group">
+                    <label>Matrícula</label>
+                    <input type="text" id="input-matricula-aluno" placeholder="Ex: RA1234" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="input-telefone-aluno" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="input-email-aluno" placeholder="exemplo@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="input-senha-aluno" placeholder="Senha de acesso" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Cadastrar Aluno</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal de Edição de Aluno -->
     <div id="aluno-edicao-modal" class="modal" onclick="fecharModalEdicaoAluno()">
         <div class="modal-content" style="max-width: 500px;" onclick="event.stopPropagation()">
@@ -204,6 +237,14 @@
                 <div class="form-group">
                     <label>Matrícula</label>
                     <input type="text" id="edit-matricula-aluno" placeholder="Ex: RA1234" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="edit-telefone-aluno" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="edit-email-aluno" placeholder="exemplo@email.com">
                 </div>
                 <div class="form-group">
                     <label>Senha</label>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech - Notificações</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Barra Superior -->
+    <div class="top-info-bar">
+        <div>
+            <strong>📚 BiblioTech</strong>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span><strong>Central de Notificações</strong></span>
+            <span class="info-separator">|</span>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="dark-mode-toggle">
+                    <input type="checkbox" id="dark-mode-toggle" />
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>BiblioTech</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="nav-link">Empréstimos</a></li>
+                    <li><a href="index.html" class="nav-link">Livros</a></li>
+                    <li><a href="index.html" class="nav-link">Cadastrar Alunos</a></li>
+                    <li><a href="notificacoes.html" class="nav-link active">🔔 Notificações <span id="badge-notificacoes-sidebar" class="badge-notificacao" style="display:none">0</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <header>
+                <h1>Notificações</h1>
+                <div style="display: flex; align-items: center; gap: 25px;">
+                    <!-- Novo container de notificações -->
+                    <div class="notificacoes-container">
+                        <div class="sino-notificacao" onclick="toggleDropdownNotificacoes()">
+                            🔔
+                            <span class="badge-notificacao" style="display:none">0</span>
+                        </div>
+                        <div class="dropdown-notificacoes" id="dropdown-notificacoes-lista">
+                            <div class="dropdown-header">
+                                <h3>Notificações</h3>
+                                <button onclick="marcarTodasComoLidas()">Marcar todas como lidas</button>
+                            </div>
+                            <div class="dropdown-body">
+                                <!-- Notificações serão inseridas aqui via JS -->
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="notificacoes.html">Ver todas as notificações</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="usuario-logado"></div>
+                    <button onclick="logout()" class="btn-logout">Sair</button>
+                </div>
+            </header>
+
+            <section id="secao-notificacoes">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Suas Atualizações</h3>
+                        <button class="btn-primary" style="padding: 5px 15px; font-size: 0.9rem;" onclick="marcarTodasComoLidas()">Marcar todas como lidas</button>
+                    </div>
+                    
+                    <div id="lista-notificacoes">
+                        <!-- Preenchido via JS -->
+                        <p style="text-align: center; color: #999; padding: 20px;">Carregando notificações...</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="app-footer">
+                <p>&copy; <span id="copyright-year">2024</span> BiblioTech. Todos os direitos reservados.</p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Script inline específico para inicializar notificações nesta página
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarPaginaNotificacoes();
+        });
+    </script>
+</body>
+</html>

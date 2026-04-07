@@ -12,25 +12,25 @@ let alunos = JSON.parse(localStorage.getItem('alunos')) || [
 ];
 
 // Dados simulados de livros com capa e gênero
-let livros = JSON.parse(localStorage.getItem('livros')) || [
-    { id: 1, titulo: 'O Pequeno Príncipe', autor: 'Antoine de Saint-Exupéry', genero: 'Infantil', capa: 'https://m.media-amazon.com/images/I/71OufPNU0VL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1943, descricao: 'Um piloto cai no deserto do Saara e encontra um jovem príncipe que viaja por planetas. Uma obra atemporal sobre amor, amizade e a essência humana.' },
-    { id: 2, titulo: 'Dom Casmurro', autor: 'Machado de Assis', genero: 'Clássicos', capa: 'https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1899, descricao: 'Bento Santiago relembra sua vida e a dúvida que o atormenta: Capitu o traiu com seu melhor amigo? Um estudo psicológico sobre ciúme e ambiguidade.' },
-    { id: 3, titulo: 'Harry Potter e a Pedra Filosofal', autor: 'J.K. Rowling', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/81ibfYk4qXL._AC_UF1000,1000_QL80_.jpg', estoque: 5, ano: 1997, descricao: 'Um órfão descobre ser um bruxo famoso e ingressa em Hogwarts. Lá, ele aprende magia, faz amigos leais e enfrenta o terrível Lord Voldemort.' },
-    { id: 4, titulo: '1984', autor: 'George Orwell', genero: 'Ficção Científica', capa: 'https://m.media-amazon.com/images/I/91JcKz0qfSL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1949, descricao: 'Em uma sociedade totalitária vigiada pelo Grande Irmão, Winston Smith tenta resistir à opressão e à manipulação da verdade em um futuro distópico sombrio.' },
-    { id: 5, titulo: 'O Guia do Mochileiro das Galáxias', autor: 'Douglas Adams', genero: 'Ficção Científica', capa: 'https://m.media-amazon.com/images/I/81e1rTE5LBL._AC_UF1000,1000_QL80_.jpg', estoque: 1, ano: 1979, descricao: 'Arthur Dent escapa da destruição da Terra com seu amigo alienígena. Juntos, exploram o universo com um guia eletrônico e uma toalha.' },
-    { id: 6, titulo: 'O Senhor dos Anéis: A Sociedade do Anel', autor: 'J.R.R. Tolkien', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/91Yr0n5lNWL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1954, descricao: 'Frodo herda um anel capaz de controlar o mundo e precisa destruí-lo na Montanha da Perdição, enfrentando perigos épicos com a Sociedade do Anel.' },
-    { id: 7, titulo: 'Orgulho e Preconceito', autor: 'Jane Austen', genero: 'Clássicos', capa: 'https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1813, descricao: 'Elizabeth Bennet e o rico Sr. Darcy enfrentam barreiras de orgulho e preconceito social enquanto descobrem o amor na Inglaterra do século XIX.' },
-    { id: 8, titulo: 'Duna', autor: 'Frank Herbert', genero: 'Ficção Científica', capa: 'https://m.media-amazon.com/images/I/41MRn6xK7bL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1965, descricao: 'Paul Atreides lidera nômades no planeta desértico Arrakis, única fonte da especiaria que permite viagens interestelares, em uma saga de política e religião.' },
-    { id: 9, titulo: 'O Hobbit', autor: 'J.R.R. Tolkien', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/91b0C2YNSrL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1937, descricao: 'Bilbo Bolseiro, um hobbit caseiro, é arrastado pelo mago Gandalf e treze anões em uma jornada perigosa para recuperar um tesouro guardado por um dragão.' },
-    { id: 10, titulo: 'A Culpa é das Estrelas', autor: 'John Green', genero: 'Romance', capa: 'https://m.media-amazon.com/images/I/512f45y7q4L._AC_UF1000,1000_QL80_.jpg', estoque: 1, ano: 2012, descricao: 'Dois adolescentes com câncer se apaixonam e buscam um autor recluso em Amsterdã, aprendendo sobre a vida, a morte e o infinito de momentos curtos.' },
-    { id: 11, titulo: 'Percy Jackson: O Ladrão de Raios', autor: 'Rick Riordan', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/91c30Jg8dQL._AC_UF1000,1000_QL80_.jpg', estoque: 4, ano: 2005, descricao: 'Percy descobre ser filho de Poseidon e é acusado de roubar o raio de Zeus. Ele deve provar sua inocência e impedir uma guerra entre os deuses gregos.' },
-    { id: 12, titulo: 'It: A Coisa', autor: 'Stephen King', genero: 'Terror', capa: 'https://m.media-amazon.com/images/I/81c8No6lsuL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1986, descricao: 'Em Derry, um grupo de crianças enfrenta uma entidade maligna que desperta a cada 27 anos para se alimentar de medos, assumindo a forma de um palhaço.' },
-    { id: 13, titulo: 'Sherlock Holmes: Um Estudo em Vermelho', autor: 'Arthur Conan Doyle', genero: 'Mistério', capa: 'https://m.media-amazon.com/images/I/81+y+g+9G+L._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1887, descricao: 'Dr. Watson conhece o detetive Sherlock Holmes e juntos investigam um misterioso assassinato em Londres, dando início a uma lendária parceria.' },
-    { id: 14, titulo: 'Jogos Vorazes', autor: 'Suzanne Collins', genero: 'Distopia', capa: 'https://m.media-amazon.com/images/I/61I24wOsn8L._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 2008, descricao: 'Em uma distopia onde jovens lutam até a morte na TV, Katniss Everdeen se voluntaria para salvar a irmã e acaba desafiando o poder da Capital.' },
-    { id: 15, titulo: 'O Código Da Vinci', autor: 'Dan Brown', genero: 'Suspense', capa: 'https://m.media-amazon.com/images/I/81AFG2ww2UL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 2003, descricao: 'Um simbologista e uma criptógrafa seguem pistas em obras de Da Vinci para desvendar um segredo religioso antigo protegido por uma sociedade secreta.' },
-    { id: 16, titulo: 'O Alquimista', autor: 'Paulo Coelho', genero: 'Ficção', capa: 'https://m.media-amazon.com/images/I/7122h3jWvEL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1988, descricao: 'Santiago, um jovem pastor, viaja da Espanha ao Egito em busca de um tesouro, descobrindo que a verdadeira riqueza está na jornada e em ouvir o coração.' },
-    { id: 17, titulo: 'O Nome do Vento', autor: 'Patrick Rothfuss', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/71S8u2GrVbL._AC_UF1000,1000_QL80_.jpg', estoque: 1, ano: 2007, descricao: 'Kvothe, um lendário arcanista e músico, narra sua história de infância, tragédia e aprendizado na Universidade, revelando os mistérios por trás do mito.' },
-    { id: 18, titulo: 'A Metamorfose', autor: 'Franz Kafka', genero: 'Ficção', capa: 'https://m.media-amazon.com/images/I/71ss5-d18RL._AC_UF1000,1000_QL80_.jpg', estoque: 4, ano: 1915, descricao: 'Gregor Samsa acorda transformado em um inseto gigante. Enquanto luta para se adaptar, observa a reação de repulsa e a mudança de atitude de sua família.' }
+let livros = JSON.parse(localStorage.getItem('livros')) || [ // Consolidado com dados de home.html
+    { id: 1, titulo: 'O Pequeno Príncipe', autor: 'Antoine de Saint-Exupéry', genero: 'Infantil', capa: 'https://m.media-amazon.com/images/I/71OufPNU0VL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1943, descricao: 'Um piloto cai no deserto do Saara e encontra um jovem príncipe que viaja por planetas. Uma obra atemporal sobre amor, amizade e a essência humana.', avaliacao: 5 },
+    { id: 2, titulo: 'Dom Casmurro', autor: 'Machado de Assis', genero: 'Clássicos', capa: 'https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1899, descricao: 'Bento Santiago relembra sua vida e a dúvida que o atormenta: Capitu o traiu com seu melhor amigo? Um estudo psicológico sobre ciúme e ambiguidade.', avaliacao: 4 },
+    { id: 3, titulo: 'Harry Potter e a Pedra Filosofal', autor: 'J.K. Rowling', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/81ibfYk4qXL._AC_UF1000,1000_QL80_.jpg', estoque: 5, ano: 1997, descricao: 'Um órfão descobre ser um bruxo famoso e ingressa em Hogwarts. Lá, ele aprende magia, faz amigos leais e enfrenta o terrível Lord Voldemort.', avaliacao: 5 },
+    { id: 4, titulo: '1984', autor: 'George Orwell', genero: 'Ficção Científica', capa: 'https://m.media-amazon.com/images/I/91JcKz0qfSL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1949, descricao: 'Em uma sociedade totalitária vigiada pelo Grande Irmão, Winston Smith tenta resistir à opressão e à manipulação da verdade em um futuro distópico sombrio.', avaliacao: 4 },
+    { id: 5, titulo: 'O Guia do Mochileiro das Galáxias', autor: 'Douglas Adams', genero: 'Ficção Científica', capa: 'https://m.media-amazon.com/images/I/81e1rTE5LBL._AC_UF1000,1000_QL80_.jpg', estoque: 1, ano: 1979, descricao: 'Arthur Dent escapa da destruição da Terra com seu amigo alienígena. Juntos, exploram o universo com um guia eletrônico e uma toalha.', avaliacao: 4 },
+    { id: 6, titulo: 'O Senhor dos Anéis: A Sociedade do Anel', autor: 'J.R.R. Tolkien', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/91Yr0n5lNWL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1954, descricao: 'Frodo herda um anel capaz de controlar o mundo e precisa destruí-lo na Montanha da Perdição, enfrentando perigos épicos com a Sociedade do Anel.', avaliacao: 5 },
+    { id: 7, titulo: 'Orgulho e Preconceito', autor: 'Jane Austen', genero: 'Clássicos', capa: 'https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1813, descricao: 'Elizabeth Bennet e o rico Sr. Darcy enfrentam barreiras de orgulho e preconceito social enquanto descobrem o amor na Inglaterra do século XIX.', avaliacao: 4 },
+    { id: 8, titulo: 'Duna', autor: 'Frank Herbert', genero: 'Ficção Científica', capa: 'https://m.media-amazon.com/images/I/41MRn6xK7bL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1965, descricao: 'Paul Atreides lidera nômades no planeta desértico Arrakis, única fonte da especiaria que permite viagens interestelares, em uma saga de política e religião.', avaliacao: 5 },
+    { id: 9, titulo: 'O Hobbit', autor: 'J.R.R. Tolkien', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/91b0C2YNSrL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1937, descricao: 'Bilbo Bolseiro, um hobbit caseiro, é arrastado pelo mago Gandalf e treze anões em uma jornada perigosa para recuperar um tesouro guardado por um dragão.', avaliacao: 5 },
+    { id: 10, titulo: 'A Culpa é das Estrelas', autor: 'John Green', genero: 'Romance', capa: 'https://m.media-amazon.com/images/I/512f45y7q4L._AC_UF1000,1000_QL80_.jpg', estoque: 1, ano: 2012, descricao: 'Dois adolescentes com câncer se apaixonam e buscam um autor recluso em Amsterdã, aprendendo sobre a vida, a morte e o infinito de momentos curtos.', avaliacao: 4 },
+    { id: 11, titulo: 'Percy Jackson: O Ladrão de Raios', autor: 'Rick Riordan', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/91c30Jg8dQL._AC_UF1000,1000_QL80_.jpg', estoque: 4, ano: 2005, descricao: 'Percy descobre ser filho de Poseidon e é acusado de roubar o raio de Zeus. Ele deve provar sua inocência e impedir uma guerra entre os deuses gregos.', avaliacao: 4 },
+    { id: 12, titulo: 'It: A Coisa', autor: 'Stephen King', genero: 'Terror', capa: 'https://m.media-amazon.com/images/I/81c8No6lsuL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1986, descricao: 'Em Derry, um grupo de crianças enfrenta uma entidade maligna que desperta a cada 27 anos para se alimentar de medos, assumindo a forma de um palhaço.', avaliacao: 3 },
+    { id: 13, titulo: 'Sherlock Holmes: Um Estudo em Vermelho', autor: 'Arthur Conan Doyle', genero: 'Mistério', capa: 'https://m.media-amazon.com/images/I/81+y+g+9G+L._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 1887, descricao: 'Dr. Watson conhece o detetive Sherlock Holmes e juntos investigam um misterioso assassinato em Londres, dando início a uma lendária parceria.', avaliacao: 4 },
+    { id: 14, titulo: 'Jogos Vorazes', autor: 'Suzanne Collins', genero: 'Distopia', capa: 'https://m.media-amazon.com/images/I/61I24wOsn8L._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 2008, descricao: 'Em uma distopia onde jovens lutam até a morte na TV, Katniss Everdeen se voluntaria para salvar a irmã e acaba desafiando o poder da Capital.', avaliacao: 4 },
+    { id: 15, titulo: 'O Código Da Vinci', autor: 'Dan Brown', genero: 'Suspense', capa: 'https://m.media-amazon.com/images/I/81AFG2ww2UL._AC_UF1000,1000_QL80_.jpg', estoque: 2, ano: 2003, descricao: 'Um simbologista e uma criptógrafa seguem pistas em obras de Da Vinci para desvendar um segredo religioso antigo protegido por uma sociedade secreta.', avaliacao: 3 },
+    { id: 16, titulo: 'O Alquimista', autor: 'Paulo Coelho', genero: 'Ficção', capa: 'https://m.media-amazon.com/images/I/7122h3jWvEL._AC_UF1000,1000_QL80_.jpg', estoque: 3, ano: 1988, descricao: 'Santiago, um jovem pastor, viaja da Espanha ao Egito em busca de um tesouro, descobrindo que a verdadeira riqueza está na jornada e em ouvir o coração.', avaliacao: 4 },
+    { id: 17, titulo: 'O Nome do Vento', autor: 'Patrick Rothfuss', genero: 'Fantasia', capa: 'https://m.media-amazon.com/images/I/71S8u2GrVbL._AC_UF1000,1000_QL80_.jpg', estoque: 1, ano: 2007, descricao: 'Kvothe, um lendário arcanista e músico, narra sua história de infância, tragédia e aprendizado na Universidade, revelando os mistérios por trás do mito.', avaliacao: 5 },
+    { id: 18, titulo: 'A Metamorfose', autor: 'Franz Kafka', genero: 'Ficção', capa: 'https://m.media-amazon.com/images/I/71ss5-d18RL._AC_UF1000,1000_QL80_.jpg', estoque: 4, ano: 1915, descricao: 'Gregor Samsa acorda transformado em um inseto gigante. Enquanto luta para se adaptar, observa a reação de repulsa e a mudança de atitude de sua família.', avaliacao: 3 }
 ];
 
 // Dados simulados de notificações
@@ -922,7 +922,7 @@ function marcarTodasComoLidas() {
 
 
 // Função de navegação entre seções
-function navegar(secaoId) {
+function navegar(secaoId, event = null) {
     // Esconde todas as seções
     document.querySelectorAll('main > section').forEach(sec => {
         sec.style.display = 'none';
@@ -930,12 +930,21 @@ function navegar(secaoId) {
 
     // Mostra a seção clicada
     document.getElementById(`secao-${secaoId}`).style.display = 'block';
+    const mainTitleElement = document.getElementById('main-content-title');
+    if (mainTitleElement) {
+        mainTitleElement.textContent = getSectionTitle(secaoId);
+    }
 
-    // Atualiza a classe 'active' no menu da sidebar
+    // Atualiza a classe 'active' no menu da sidebar de forma robusta
+    if (event) event.preventDefault();
     document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-        link.classList.remove('active');
+        const onclickAttr = link.getAttribute('onclick') || "";
+        if (onclickAttr.includes(`'${secaoId}'`)) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
     });
-    document.querySelector(`.sidebar a[onclick="navegar('${secaoId}')"]`).classList.add('active');
 
     // Se a seção for de alunos, renderiza a tabela de alunos
     if (secaoId === 'alunos') {
@@ -951,6 +960,10 @@ function navegar(secaoId) {
             }
         }
         renderizarLivros();
+    } else if (['destaques', 'favoritos', 'catalogo'].includes(secaoId)) {
+        renderizarTudo();
+    } else if (secaoId === 'clube-livro') {
+        renderizarChat();
     }
 }
 
@@ -963,9 +976,31 @@ function logout() {
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
+    navegar('home', null); // Inicia na seção "Início"
     renderizarTabela();
     renderizarDropdownNotificacoes(); // Popula o dropdown ao carregar
-    atualizarContadorNotificacoes(); // Inicia o contador
+    atualizarContadorNotificacoes(); // Inicia o contador (do home.html)
+    
+    // --- Ouvinte do botão de Microfone ---
+    const micBtn = document.getElementById('ai-mic-btn');
+    if (micBtn) {
+        micBtn.addEventListener('click', startVoiceRecognition);
+    }
+
+    // --- Lógica do Controle de Som ---
+    const soundToggle = document.getElementById('sound-toggle');
+    const soundLabel = document.getElementById('sound-label');
+    
+    if (soundToggle) {
+        const savedSound = localStorage.getItem('sound_enabled');
+        soundToggle.checked = savedSound !== 'false'; // Padrão é true
+        if (soundLabel) soundLabel.textContent = soundToggle.checked ? '🔊' : '🔇';
+
+        soundToggle.addEventListener('change', () => {
+            localStorage.setItem('sound_enabled', soundToggle.checked);
+            if (soundLabel) soundLabel.textContent = soundToggle.checked ? '🔊' : '🔇';
+        });
+    }
 
     // Carregar nome do usuário logado
     const usuarioLogado = localStorage.getItem('usuarioLogado');
@@ -974,28 +1009,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elementoUsuario) elementoUsuario.textContent = `Olá 👋, ${usuarioLogado}`;
     }
 
-    // --- Lógica do Modo Escuro ---
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    // --- Lógica Unificada do Modo Escuro ---
+    const themeToggle = document.getElementById('theme-toggle') || document.getElementById('dark-mode-toggle');
 
     const applyTheme = (isDark) => {
         document.body.classList.toggle('dark-mode', isDark);
-        if (darkModeToggle) {
-            darkModeToggle.checked = isDark;
-        }
+        if (themeToggle) themeToggle.checked = isDark;
     };
 
-    // Verifica a preferência salva no localStorage ao carregar a página
     const savedTheme = localStorage.getItem('theme');
-    // Se não houver tema salvo, usa a preferência do sistema. Senão, usa o tema salvo.
     const initialThemeIsDark = savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(initialThemeIsDark);
 
-    // Adiciona o listener para o botão de toggle
-    if (darkModeToggle) {
-        darkModeToggle.addEventListener('change', () => {
-            const isDark = darkModeToggle.checked;
-            applyTheme(isDark);
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    if (themeToggle) {
+        themeToggle.addEventListener('change', () => {
+            applyTheme(themeToggle.checked);
+            localStorage.setItem('theme', themeToggle.checked ? 'dark' : 'light');
         });
     }
 
@@ -1088,3 +1117,494 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// --- Funções de Destaques, Favoritos, Recomendações (do home.html) ---
+let favoritos = JSON.parse(localStorage.getItem('meus_favoritos')) || [];
+
+// Estrelas
+function gerarEstrelas(nota) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        html += `<span class="${i <= nota ? 'estrela-cheia' : 'estrela-vazia'}">★</span>`;
+    }
+    return html;
+}
+
+// Criar Card
+function criarCard(livro, callback) {
+    const card = document.createElement('div');
+    card.className = 'livro-card';
+    card.onclick = () => callback(livro);
+    // Adiciona o ID do livro ao card para facilitar a identificação
+    const isFav = favoritos.includes(livro.id);
+    
+    card.innerHTML = `
+        <button class="btn-favorito ${isFav ? 'ativo' : ''}" onclick="event.stopPropagation(); toggleFavorito(${livro.id})">❤</button>
+        <img src="${livro.capa}" class="capa" alt="${livro.titulo}" onerror="this.onerror=null;this.src='https://via.placeholder.com/150x220?text=Sem+Capa'">
+        <div class="genero">${livro.genero}</div>
+        <div class="titulo">${livro.titulo}</div>
+        <div class="autor">${livro.autor}</div>
+        <div class="avaliacao">${gerarEstrelas(livro.avaliacao || 0)}</div>
+    `;
+    return card;
+}
+
+function toggleFavorito(id) {
+    const idx = favoritos.indexOf(id);
+    idx === -1 ? favoritos.push(id) : favoritos.splice(idx, 1);
+    localStorage.setItem('meus_favoritos', JSON.stringify(favoritos));
+    renderizarTudo(); // Re-renderiza todas as seções que dependem de favoritos (Destaques, Favoritos, Catálogo)
+}
+
+function mostrarRecomendacoes(selecionado) {
+    const container = document.getElementById('recomendacoes');
+    const secao = document.getElementById('secao-recomendacoes');
+    const filtrados = livros.filter(l => l.genero === selecionado.genero && l.id !== selecionado.id);
+    
+    container.innerHTML = '';
+    if (filtrados.length > 0) {
+        filtrados.slice(0, 3).forEach(l => container.appendChild(criarCard(l, mostrarRecomendacoes)));
+        secao.style.display = 'block';
+        // Garante que a seção de recomendações seja visível e role para ela
+        // Isso é importante pois a seção pode estar oculta inicialmente
+        secao.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        secao.style.display = 'none';
+    }
+}
+
+function renderizarTudo() {
+    // Destaques
+    const gridDestaques = document.getElementById('grid-destaques');
+    if (gridDestaques) {
+        gridDestaques.innerHTML = '';
+        livros.filter(l => l.avaliacao === 5).forEach(l => gridDestaques.appendChild(criarCard(l, mostrarRecomendacoes)));
+    }
+
+    // Favoritos
+    const secaoFav = document.getElementById('secao-favoritos');
+    const gridFav = document.getElementById('grid-favoritos');
+    if (gridFav) {
+        gridFav.innerHTML = '';
+        const listaFav = livros.filter(l => favoritos.includes(l.id));
+        if (listaFav.length > 0) {
+            if (secaoFav) secaoFav.style.display = 'block';
+            listaFav.forEach(l => gridFav.appendChild(criarCard(l, mostrarRecomendacoes)));
+        } else if (secaoFav) { 
+            secaoFav.style.display = 'none'; 
+        }
+    }
+
+    // Catálogo
+    const catalogo = document.getElementById('catalogo');
+    if (catalogo) {
+        catalogo.innerHTML = '';
+        livros.forEach(l => catalogo.appendChild(criarCard(l, mostrarRecomendacoes)));
+    }
+}
+
+/**
+ * Incrementa as curtidas de uma mensagem e atualiza o armazenamento
+ */
+function reagirMensagem(id) {
+    const index = mensagensChat.findIndex(m => m.id === id);
+    if (index !== -1) {
+        mensagensChat[index].likes = (mensagensChat[index].likes || 0) + 1;
+        localStorage.setItem('chat_messages', JSON.stringify(mensagensChat));
+        renderizarChat(); // Re-renderiza para atualizar os contadores na tela
+    }
+}
+
+// --- Chat Logic (do home.html) ---
+const chatForm = document.getElementById('chat-form');
+const chatWindow = document.getElementById('chat-window');
+const chatInput = document.getElementById('chat-input');
+
+let mensagensChat = JSON.parse(localStorage.getItem('chat_messages')) || [];
+
+function addChatMessage(text, type, user = "Usuário", time = null, save = true, image = null, id = Date.now(), likes = 0) {
+    const currentTime = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const initials = user.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    
+    const msg = document.createElement('div');
+    msg.className = `message ${type}`;
+    msg.innerHTML = `
+        <div class="message-avatar">${initials}</div>
+        <div class="message-content">
+            <small class="message-user">${user}</small>
+            ${image ? `<img src="${image}" class="message-image" alt="Imagem enviada" onclick="window.open(this.src)">` : ''}
+            ${text ? `<span>${text}</span>` : ''}
+            <div class="message-footer">
+                <span class="chat-time">${currentTime}</span>
+                <button class="btn-react" onclick="reagirMensagem(${id})">❤️ <span class="like-count">${likes}</span></button>
+            </div>
+        </div>
+    `;
+    
+    if (chatWindow) { // Verifica se o elemento do chat existe
+        chatWindow.appendChild(msg);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    if (save) {
+        mensagensChat.push({ id, text, type, user, time: currentTime, image, likes });
+        localStorage.setItem('chat_messages', JSON.stringify(mensagensChat));
+    }
+}
+
+function renderizarChat() {
+    if (!chatWindow || document.getElementById('secao-clube-livro').style.display === 'none') return; // Verifica se o elemento existe e a seção está visível
+    chatWindow.innerHTML = '';
+    if (mensagensChat.length === 0) {
+        addChatMessage("Bem-vindos ao clube! O que estão lendo hoje?", 'received', "BiblioBot");
+    } else {
+        mensagensChat.forEach(m => addChatMessage(m.text, m.type, m.user, m.time, false, m.image, m.id, m.likes));
+    }
+}
+function limparChat() {
+    if (confirm("Deseja realmente apagar todo o histórico de conversas?")) {
+        mensagensChat = [];
+        localStorage.removeItem('chat_messages');
+        renderizarChat();
+    }
+}
+
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'typing-indicator';
+    typingDiv.className = 'typing';
+    typingDiv.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    if (chatWindow) { // Verifica se o elemento do chat existe
+        chatWindow.appendChild(typingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+}
+
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) indicator.remove();
+}
+
+if (chatForm) { // Adiciona o listener apenas se o formulário do chat existir
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = chatInput.value.trim();
+        const userNome = localStorage.getItem('usuarioLogado') || 'Você';
+        if (val) {
+            addChatMessage(val, 'sent', userNome);
+            chatInput.value = '';
+            
+            setTimeout(() => {
+                showTypingIndicator();
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    const botResponses = [
+                        {msg: "Concordo plenamente!", user: "Maria Oliveira"},
+                        {msg: "Alguém já leu o capítulo 5 de 1984?", user: "Pedro Santos"},
+                        {msg: "Duna é fantástico!", user: "Davi Soares"}
+                    ];
+                    const resp = botResponses[Math.floor(Math.random()*botResponses.length)];
+                    addChatMessage(resp.msg, 'received', resp.user);
+                }, 1500);
+            }, 600);
+        }
+    });
+}
+
+// --- Lógica para envio de Imagens no Chat ---
+const chatImageInput = document.getElementById('chat-image-input');
+if (chatImageInput) {
+    chatImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64Image = event.target.result;
+                const userNome = localStorage.getItem('usuarioLogado') || 'Você';
+                addChatMessage("", 'sent', userNome, null, true, base64Image);
+                chatImageInput.value = ''; // Reseta para permitir enviar a mesma imagem novamente
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// --- AI Assistant Logic (do home.html) ---
+const aiModal = document.getElementById('ai-assistant-modal');
+const aiChatWindow = document.getElementById('ai-chat-window'); // Elemento da janela de chat da IA
+const aiChatForm = document.getElementById('ai-chat-form');
+const aiMessageInput = document.getElementById('ai-message-input');
+
+const GREETINGS_IA = [
+    "Oi! Quer ajuda pra achar um livro incrível hoje?",
+    "Me conta o que você gosta de ler que eu te dou boas sugestões!",
+    "Perdido na biblioteca? Relaxa, eu te guio 📖",
+    "Se você não sabe o que ler, eu tenho várias ideias pra você!",
+    "Estou aqui pra facilitar sua vida na biblioteca 😊",
+    "Precisa de ajuda com um trabalho? Posso sugerir fontes confiáveis!",
+    "Encontre rapidamente livros e artigos para sua pesquisa.",
+    "Posso te ajudar a montar uma bibliografia de qualidade.",
+    "Buscando conteúdo para estudar? Eu te mostro o caminho.",
+    "Transformo sua pesquisa em algo simples e organizado.",
+    "Sua biblioteca inteligente, disponível 24 horas por dia.",
+    "Com tecnologia de IA, encontro o que você precisa em segundos.",
+    "Pesquisa rápida, precisa e personalizada com inteligência artificial.",
+    "Descubra novos livros com recomendações inteligentes.",
+    "Conectando você ao conhecimento de forma inovadora."
+];
+
+let aiChatMessages = JSON.parse(localStorage.getItem('ai_chat_messages')) || [];
+
+// Contexto de áudio global para o assistente (Web Audio API)
+let aiAudioCtx = null;
+
+/**
+ * Gera um som sutil de clique de teclado programaticamente.
+ */
+function playTypingSound() {
+    try {
+        // Verifica se o som está ativado nas configurações
+        const soundToggle = document.getElementById('sound-toggle');
+        if (soundToggle && !soundToggle.checked) return;
+
+        if (!aiAudioCtx) aiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (aiAudioCtx.state === 'suspended') aiAudioCtx.resume();
+
+        const osc = aiAudioCtx.createOscillator();
+        const gain = aiAudioCtx.createGain();
+
+        osc.type = 'sine'; // Som suave
+        // Frequência aleatória entre 400Hz e 450Hz para simular teclas diferentes
+        osc.frequency.setValueAtTime(400 + Math.random() * 50, aiAudioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.01, aiAudioCtx.currentTime); // Volume bem baixo (1%)
+        gain.gain.exponentialRampToValueAtTime(0.001, aiAudioCtx.currentTime + 0.02);
+
+        osc.connect(gain);
+        gain.connect(aiAudioCtx.destination);
+
+        osc.start();
+        osc.stop(aiAudioCtx.currentTime + 0.02);
+    } catch (e) {
+        // Silencioso se o navegador bloquear áudio
+    }
+}
+
+function openAIAssistant() {
+    // Inicializa o contexto de áudio no primeiro clique (requisito de segurança dos navegadores)
+    if (!aiAudioCtx) aiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    if (aiModal) { // Verifica se o modal existe
+        aiModal.style.display = 'flex'; // Mostra o modal
+        renderAIChat();
+        aiMessageInput.focus();
+    }
+}
+
+function closeAIAssistant() {
+    if (aiModal) aiModal.style.display = 'none';
+}
+
+function addAIMessage(text, type, save = true, isTypewriter = false) {
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const msg = document.createElement('div');
+    msg.className = `message ${type}`;
+    
+    const textSpan = document.createElement('span');
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'chat-time';
+    timeSpan.textContent = currentTime;
+
+    msg.appendChild(textSpan);
+    msg.appendChild(timeSpan);
+
+    if (aiChatWindow) { // Verifica se o elemento da janela de chat da IA existe
+        aiChatWindow.appendChild(msg);
+        aiChatWindow.scrollTop = aiChatWindow.scrollHeight;
+    }
+
+    if (isTypewriter) {
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                const char = text.charAt(i);
+                textSpan.textContent += char;
+                
+                // Toca o som apenas se não for um espaço, para um efeito mais real
+                if (char !== ' ') playTypingSound();
+
+                i++;
+                aiChatWindow.scrollTop = aiChatWindow.scrollHeight;
+
+                // Velocidade natural: variação randômica entre 15ms e 65ms
+                let speed = Math.random() * 50 + 15;
+
+                // Pausas dramáticas em pontuações
+                if (['.', '!', '?'].includes(char)) speed += 400;
+                else if ([',', ';', ':'].includes(char)) speed += 200;
+
+                setTimeout(typeWriter, speed);
+            }
+        }
+        typeWriter();
+    } else {
+        textSpan.textContent = text;
+    }
+
+    if (save) {
+        aiChatMessages.push({ text, type, time: currentTime });
+        localStorage.setItem('ai_chat_messages', JSON.stringify(aiChatMessages));
+    }
+}
+
+function renderAIChat() {
+    if (!aiChatWindow) return; // Verifica se o elemento da janela de chat da IA existe
+    aiChatWindow.innerHTML = '';
+    
+    // Escolhe uma saudação aleatória toda vez que abre
+    const randomGreeting = GREETINGS_IA[Math.floor(Math.random() * GREETINGS_IA.length)];
+    
+    addAIMessage(randomGreeting, 'received', false);
+}
+
+function showAITypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'ai-typing-indicator';
+    typingDiv.className = 'typing';
+    typingDiv.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    if (aiChatWindow) { // Verifica se o elemento da janela de chat da IA existe
+        aiChatWindow.appendChild(typingDiv);
+        aiChatWindow.scrollTop = aiChatWindow.scrollHeight;
+    }
+}
+
+function hideAITypingIndicator() {
+    const indicator = document.getElementById('ai-typing-indicator');
+    if (indicator) indicator.remove();
+}
+
+function processAIInput(input) {
+    const lowerInput = input.toLowerCase();
+    let response = "Não consegui encontrar algo específico sobre isso no acervo. Que tal buscar por um gênero (como Fantasia) ou um título?";
+
+    // Respostas gerais
+    if (lowerInput.includes("olá") || lowerInput.includes("oi") || lowerInput.trim() === "ia") {
+        response = "Olá! Posso te ajudar a encontrar livros, autores ou gêneros. O que você gostaria de saber?";
+    } else if (lowerInput.includes("obrigado") || lowerInput.includes("valeu")) {
+        response = "De nada! Fico feliz em ajudar.";
+    }
+
+    // Lógica de Recomendação (Melhores Avaliados)
+    if (lowerInput.includes("recomende") || lowerInput.includes("sugira") || lowerInput.includes("melhores")) {
+        const topLivros = livros.filter(l => l.avaliacao === 5);
+        if (topLivros.length > 0) {
+            const sorteado = topLivros[Math.floor(Math.random() * topLivros.length)];
+            return `Com certeza! Eu recomendo "${sorteado.titulo}". Ele tem nota máxima (5 estrelas) e é um dos favoritos dos nossos leitores.`;
+        }
+    }
+
+    // Lógica de Disponibilidade
+    if (lowerInput.includes("tem") || lowerInput.includes("disponível") || lowerInput.includes("estoque")) {
+        const livroEncontrado = livros.find(l => lowerInput.includes(l.titulo.toLowerCase()));
+        if (livroEncontrado) {
+            const emprestados = emprestimos.filter(e => e.livro === livroEncontrado.titulo && (e.status === 'ABERTO' || e.status === 'ATRASADO')).length;
+            const disponiveis = livroEncontrado.estoque - emprestados;
+            return disponiveis > 0 
+                ? `Sim! Temos ${disponiveis} cópias de "${livroEncontrado.titulo}" disponíveis para empréstimo imediato.` 
+                : `No momento, todas as cópias de "${livroEncontrado.titulo}" estão emprestadas.`;
+        }
+    }
+    
+    // Busca por gênero
+    const generosUnicos = [...new Set(livros.map(l => l.genero.toLowerCase()))];
+    for (const genero of generosUnicos) {
+        if (lowerInput.includes(genero)) {
+            const livrosDoGenero = livros.filter(l => l.genero.toLowerCase() === genero);
+            const titulos = livrosDoGenero.slice(0, 3).map(l => l.titulo).join(', ');
+            return `No gênero "${genero}", temos livros como: ${titulos}. Algum deles te interessa?`;
+        }
+    }
+
+    // Busca por título ou autor
+    const livroEncontrado = livros.find(l => 
+        lowerInput.includes(l.titulo.toLowerCase()) || 
+        lowerInput.includes(l.autor.toLowerCase())
+    );
+    if (livroEncontrado) {
+        response = `Ah, você está perguntando sobre "${livroEncontrado.titulo}"! É uma obra de ${livroEncontrado.genero} escrita por ${livroEncontrado.autor}.`;
+    }
+
+    return response;
+}
+
+if (aiChatForm) { // Adiciona o listener apenas se o formulário do chat da IA existir
+    aiChatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = aiMessageInput.value.trim();
+        if (!userMessage) return;
+        addAIMessage(userMessage, 'sent');
+        aiMessageInput.value = '';
+        showAITypingIndicator();
+        setTimeout(() => {
+            hideAITypingIndicator();
+            const aiResponse = processAIInput(userMessage);
+            addAIMessage(aiResponse, 'received', true, true);
+        }, 1500);
+    });
+}
+
+/**
+ * Inicializa e gerencia o reconhecimento de voz para a IA.
+ */
+function startVoiceRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        alert("Desculpe, seu navegador não suporta reconhecimento de voz. Tente usar o Google Chrome ou Microsoft Edge.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    const micBtn = document.getElementById('ai-mic-btn');
+
+    recognition.onstart = () => {
+        micBtn.classList.add('recording');
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (aiMessageInput) {
+            aiMessageInput.value = transcript;
+            // Dispara o evento de submit do formulário automaticamente após falar
+            aiChatForm.dispatchEvent(new Event('submit'));
+        }
+    };
+
+    recognition.onerror = () => {
+        micBtn.classList.remove('recording');
+    };
+
+    recognition.onend = () => {
+        micBtn.classList.remove('recording');
+    };
+
+    recognition.start();
+}
+
+// Função auxiliar para obter o título da seção
+function getSectionTitle(secaoId) {
+    switch (secaoId) {
+        case 'home': return '🏠 Início';
+        // Os títulos de Empréstimos, Livros e Alunos já são definidos no HTML
+        case 'emprestimos': return 'Painel de Controle';
+        case 'livros': return 'Catálogo de Livros';
+        case 'alunos': return 'Gestão de Alunos';
+        case 'destaques': return '✨ Destaques da Semana';
+        case 'catalogo': return '📖 Catálogo Completo';
+        case 'favoritos': return '⭐ Meus Favoritos';
+        case 'clube-livro': return '💬 Clube do Livro';
+        default: return 'BiblioTech'; // Título padrão
+    }
+}

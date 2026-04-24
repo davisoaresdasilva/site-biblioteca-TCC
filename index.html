@@ -8,6 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Barra de Notificação de Escuta da IA -->
+    <div id="ai-listening-bar" class="ai-listening-bar">
+        <span>✨ BiblioTech AI: Ouvindo comando "Ok BiblioTech"... 🎤</span>
+        <button type="button" onclick="pararEscutaHotword()" class="btn-stop-hotword" title="Desativar comando de voz">✕</button>
+    </div>
+
     <header> <!-- Header principal da aplicação -->
         <div class="logo"><strong>📚 BiblioTech</strong></div>
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -18,7 +24,6 @@
                     <span class="slider round"></span>
                 </label>
             </div>
-            <span>🌙</span>
             <label class="theme-switch">
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider"></span>
@@ -37,7 +42,7 @@
                     <li><a href="#" class="nav-link active" onclick="navegar('home')">🏠 Início</a></li>
                     <li><a href="#" class="nav-link" onclick="navegar('emprestimos')">Empréstimos</a></li>
                     <li><a href="#" class="nav-link" onclick="navegar('livros')">Livros</a></li>
-                    <li><a href="#" class="nav-link" onclick="navegar('alunos')">Cadastrar Alunos</a></li>
+                    <li id="nav-item-alunos"><a href="#" class="nav-link" onclick="navegar('alunos')">Cadastrar Alunos</a></li>
                     <!-- Novas seções abaixo de Cadastrar Alunos -->
                     <li><a href="#" class="nav-link" onclick="navegar('destaques', event)">✨ Destaques da Semana</a></li>
                     <li><a href="#" class="nav-link" onclick="navegar('catalogo', event)">📖 Catálogo Completo</a></li>
@@ -85,6 +90,12 @@
                         <p>Sua biblioteca pessoal, em qualquer lugar.</p>
                     </div>
                 </div>
+
+                <!-- Dashboard de Estatísticas (Já existente) -->
+                <div id="stats-dashboard" class="stats-container"></div>
+
+                <!-- Recomendações Baseadas no Perfil -->
+                <div id="recomendacoes-perfil-container" class="secao-recomendacoes-perfil"></div>
             </section>
 
             <!-- Seção de Empréstimos -->

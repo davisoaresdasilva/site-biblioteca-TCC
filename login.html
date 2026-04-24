@@ -34,7 +34,7 @@
                     <p>Acesse o portal de gestão do conhecimento.</p>
                 </div>
                 
-                <form onsubmit="realizarLogin(event)">
+                <form onsubmit="realizarLogin(event)" novalidate>
                     <div class="form-group">
                         <label for="usuario">Usuário / Matrícula</label>
                         <input type="text" id="usuario" placeholder="Ex: admin" required>
@@ -85,7 +85,19 @@
         <p>Verificando, aguarde...</p>
     </div>
 
+    <!-- Tela de Sucesso (Acesso Concedido) -->
+    <div id="success-overlay">
+        <div class="success-icon">✔️</div>
+        <div class="success-message">Acesso Concedido!</div>
+        <p style="margin-top: 10px; font-size: 1.1rem; opacity: 0.9;">Redirecionando para a BiblioTech...</p>
+    </div>
+
     <script>
+        // Redirecionamento automático: se o usuário já estiver logado, vai direto para a home
+        if (localStorage.getItem('usuarioLogado')) {
+            window.location.href = "index.html";
+        }
+
         // Frases motivacionais aleatórias
         const frases = [
             { texto: "Um livro é um sonho que você segura na mão.", autor: "Neil Gaiman" },
@@ -107,7 +119,7 @@
         autorEl.textContent = `– ${frases[indiceAleatorio].autor}`;
 
         // --- Lógica do Modo Noturno ---
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const darkModeToggle = document.getElementById('theme-toggle');
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
@@ -130,6 +142,55 @@
         // --- Lógica de Recuperação de Senha ---
         // OBS: A lista de alunos é duplicada aqui para a simulação,
         // pois a página de login não carrega o script.js principal.
+
+        /**
+         * Gera um som de sucesso (arpejo ascendente) via Web Audio API
+         */
+        function playSuccessSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const frequencias = [523.25, 659.25, 783.99, 1046.50]; // Notas C5, E5, G5, C6
+                
+                frequencias.forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (i * 0.1));
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + (i * 0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.1) + 0.4);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + (i * 0.1));
+                    osc.stop(audioCtx.currentTime + (i * 0.1) + 0.4);
+                });
+            } catch (e) { console.warn("Áudio bloqueado."); }
+        }
+
+        /**
+         * Gera partículas de confete na tela de sucesso
+         */
+        function lancarConfetes() {
+            const overlay = document.getElementById('success-overlay');
+            const cores = ['#f1c40f', '#e74c3c', '#3498db', '#9b59b6', '#2ecc71', '#f39c12', '#ffffff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Posicionamento e estilo aleatório
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                confetti.style.width = (Math.random() * 8 + 5) + 'px';
+                confetti.style.height = (Math.random() * 8 + 5) + 'px';
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+                
+                overlay.appendChild(confetti);
+            }
+        }
+
         const mockAlunos = [
             { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123', email: 'maria.o@email.com' },
             { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456', email: 'pedro.s@email.com' },
@@ -147,7 +208,16 @@
         }
 
         function fecharModalRecuperarSenha() {
-            modalRecuperar.style.display = 'none';
+            const content = modalRecuperar.querySelector('.modal-content');
+            if (content) {
+                content.classList.add('closing');
+                content.addEventListener('animationend', () => {
+                    modalRecuperar.style.display = 'none';
+                    content.classList.remove('closing');
+                }, { once: true });
+            } else {
+                modalRecuperar.style.display = 'none';
+            }
         }
 
         function recuperarSenha(event) {
@@ -171,26 +241,41 @@
         function realizarLogin(event) {
             event.preventDefault();
 
-            // Mostra a tela de carregamento
-            document.getElementById('loading-overlay').style.display = 'flex';
+            const usuarioInput = document.getElementById('usuario');
+            const senhaInput = document.getElementById('senha');
+            const loginCard = document.querySelector('.login-card');
+            const loading = document.getElementById('loading-overlay');
+            const success = document.getElementById('success-overlay');
 
-            // Simulação de autenticação
-            const usuario = document.getElementById('usuario').value;
-            const senha = document.getElementById('senha').value;
-
-            // Lógica simples para definir o papel (role)
-            let role = 'user'; // Papel padrão
-            if (usuario.toLowerCase() === 'admin' && senha === 'admin') {
-                role = 'admin';
+            // Validação customizada com efeito de vibração
+            if (!usuarioInput.value.trim() || !senhaInput.value.trim()) {
+                loginCard.classList.add('shake');
+                setTimeout(() => loginCard.classList.remove('shake'), 500);
+                return;
             }
 
-            localStorage.setItem('usuarioLogado', usuario);
-            localStorage.setItem('userRole', role); // Salva o papel do usuário
+            const usuario = usuarioInput.value;
 
-            // Simula uma verificação de 2 segundos e depois redireciona
+            // Mostra a tela de carregamento
+            loading.style.display = 'flex';
+
+            // Simula um tempo de processamento curto
             setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2000);
+                loading.style.display = 'none';
+                
+                // Liberação total: qualquer usuário e senha são aceitos
+                localStorage.setItem('usuarioLogado', usuario);
+                localStorage.setItem('userRole', usuario.toLowerCase() === 'admin' ? 'admin' : 'user');
+
+                // Ativa a animação de sucesso
+                success.style.display = 'flex';
+                playSuccessSound(); // Toca o som simultaneamente com a animação
+                lancarConfetes();   // Dispara os confetes
+
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2200); // Tempo para o usuário ver a animação
+            }, 1200);
         }
     </script>
 </body>

@@ -35,9 +35,9 @@ let livros = JSON.parse(localStorage.getItem('livros')) || [ // Consolidado com 
 
 // Dados simulados de notificações
 let notificacoes = JSON.parse(localStorage.getItem('notificacoes')) || [
-    { id: 1, titulo: 'Bem-vindo ao BiblioTech', mensagem: 'Seu sistema de gestão foi atualizado.', data: '2023-10-27', lida: false },
-    { id: 2, titulo: 'Novo Livro Disponível', mensagem: 'O livro "Clean Code" foi adicionado ao acervo.', data: '2023-10-26', lida: true },
-    { id: 3, titulo: 'Lembrete de Devolução', mensagem: 'Verifique os atrasos na aba de empréstimos.', data: '2023-10-25', lida: false }
+    { id: 1, titulo: 'Bem-vindo ao BiblioTech', mensagem: 'Seu sistema de gestão foi atualizado.', data: '2023-10-27', lida: false, prioridade: 'media' },
+    { id: 2, titulo: 'Novo Livro Disponível', mensagem: 'O livro "Clean Code" foi adicionado ao acervo.', data: '2023-10-26', lida: true, prioridade: 'baixa' },
+    { id: 3, titulo: 'Lembrete de Devolução', mensagem: 'Verifique os atrasos na aba de empréstimos.', data: '2023-10-25', lida: false, prioridade: 'alta' }
 ];
 
 // Função para renderizar alertas de livros atrasados
@@ -170,7 +170,7 @@ if (formEmprestimo) {
     renderizarTabela();
     this.reset();
     
-    adicionarNotificacao('Novo Empréstimo', `O livro "${livro}" foi emprestado para ${nomeAluno}.`);
+    adicionarNotificacao('Novo Empréstimo', `O livro "${livro}" foi emprestado para ${nomeAluno}.`, 'media');
     alert('Empréstimo registrado com sucesso!');
     });
 }
@@ -183,7 +183,7 @@ function devolverLivro(id) {
             emprestimo.status = 'CONCLUIDO';
             renderizarTabela();
             renderizarLivros(); // Atualiza a galeria para mostrar o livro como disponível
-            adicionarNotificacao('Livro Devolvido', `O livro "${emprestimo.livro}" foi devolvido.`);
+            adicionarNotificacao('Livro Devolvido', `O livro "${emprestimo.livro}" foi devolvido.`, 'baixa');
         }
     }
 }
@@ -194,6 +194,7 @@ function marcarAtrasado(id) {
     if (emprestimo && emprestimo.status !== 'CONCLUIDO') {
         emprestimo.status = 'ATRASADO';
         renderizarTabela();
+        adicionarNotificacao('ALERTA DE ATRASO', `O empréstimo de "${emprestimo.livro}" para ${emprestimo.aluno} está atrasado!`, 'alta');
     }
 }
 
@@ -231,7 +232,7 @@ function renderizarTabelaAlunos(termoBusca = '') {
     tbody.innerHTML = '';
     thead.innerHTML = '';
 
-    const isAdmin = true; // Modo admin ativado para controle total
+    const isAdmin = localStorage.getItem('userRole') === 'admin';
 
     // Constrói o cabeçalho da tabela dinamicamente
     let headerHtml = `<tr><th>Nome</th><th>Matrícula</th>`;
@@ -277,7 +278,7 @@ function renderizarTabelaAlunos(termoBusca = '') {
     });
 
     // Atualiza a contagem total
-    totalAlunosEl.textContent = `Exibindo ${alunosFiltrados.length} de ${alunos.length} alunos`;
+    if (totalAlunosEl) totalAlunosEl.textContent = `Exibindo ${alunosFiltrados.length} de ${alunos.length} alunos`;
 }
 
 // Função para cadastrar novo aluno
@@ -402,7 +403,21 @@ function verHistoricoAluno(id) {
 }
 
 function fecharModalHistorico() {
-    document.getElementById('historico-aluno-modal').style.display = 'none';
+    fecharModalComAnimacao('historico-aluno-modal');
+}
+
+/**
+ * Helper para fechar modais com animação.
+ */
+function fecharModalComAnimacao(modalId, contentSelector = '.modal-content') {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    const content = modal.querySelector(contentSelector);
+    content.classList.add('closing');
+    content.addEventListener('animationend', () => {
+        modal.style.display = 'none';
+        content.classList.remove('closing');
+    }, { once: true });
 }
 
 // --- Funções do Modal de Cadastro (Novo) ---
@@ -412,7 +427,7 @@ function abrirModalCadastroAluno() {
 }
 
 function fecharModalCadastroAluno() {
-    document.getElementById('aluno-cadastro-modal').style.display = 'none';
+    fecharModalComAnimacao('aluno-cadastro-modal');
 }
 
 // --- Funções de Edição de Aluno ---
@@ -434,7 +449,7 @@ function abrirModalEdicaoAluno(id) {
 }
 
 function fecharModalEdicaoAluno() {
-    document.getElementById('aluno-edicao-modal').style.display = 'none';
+    fecharModalComAnimacao('aluno-edicao-modal');
 }
 
 function salvarEdicaoAluno(event) {
@@ -494,7 +509,7 @@ function abrirModalEdicaoLivro(id) {
 }
 
 function fecharModalEdicaoLivro() {
-    document.getElementById('livro-edicao-modal').style.display = 'none';
+    fecharModalComAnimacao('livro-edicao-modal');
 }
 
 function salvarEdicaoLivro(event) {
@@ -514,7 +529,7 @@ function salvarEdicaoLivro(event) {
 
         renderizarLivros();
         fecharModalEdicaoLivro();
-        adicionarNotificacao('Livro Atualizado', `As informações de "${livros[index].titulo}" foram alteradas.`);
+        adicionarNotificacao('Livro Atualizado', `As informações de "${livros[index].titulo}" foram alteradas.`, 'baixa');
         alert('Livro atualizado com sucesso!');
     }
 }
@@ -582,7 +597,7 @@ function solicitarLivro(id) {
     emprestimos.push(novoEmprestimo);
     localStorage.setItem('emprestimos', JSON.stringify(emprestimos));
     
-    adicionarNotificacao('Solicitação de Livro', `Você solicitou o livro "${livro.titulo}".`);
+    adicionarNotificacao('Solicitação de Livro', `Você solicitou o livro "${livro.titulo}".`, 'baixa');
     alert(`Empréstimo realizado com sucesso! O livro "${livro.titulo}" agora está com você.`);
     
     // Atualiza as interfaces
@@ -605,8 +620,9 @@ function renderizarLivros() {
     }, {});
 
     const placeholderCapa = 'https://via.placeholder.com/180x240?text=Capa+Indispon%C3%ADvel';
-    const isAdmin = true; // Modo admin ativado
+    const isAdmin = localStorage.getItem('userRole') === 'admin';
 
+    let totalCards = 0;
     // Itera sobre cada gênero e cria a seção correspondente
     for (const genero in livrosPorGenero) {
         const containerGenero = document.createElement('div');
@@ -617,6 +633,7 @@ function renderizarLivros() {
         listaLivros.className = 'livros-lista';
 
         const livrosHtml = livrosPorGenero[genero].map(livro => {
+            const delay = (totalCards++) * 0.05;
             const deleteButton = isAdmin 
                 ? `<button class="btn-excluir-livro" onclick="event.stopPropagation(); excluirLivro(${livro.id})">X</button>` 
                 : '';
@@ -646,7 +663,7 @@ function renderizarLivros() {
             const requestButton = `<button class="btn-solicitar" onclick="event.stopPropagation(); solicitarLivro(${livro.id})" ${btnDisabled}>${btnText}</button>`;
 
             return `
-                <div class="livro-card" onclick="mostrarDetalhesLivro(${livro.id})">
+                <div class="livro-card" style="animation-delay: ${delay}s" onclick="mostrarDetalhesLivro(${livro.id})">
                     ${deleteButton}
                     ${editButton}
                     <img src="${livro.capa}" alt="Capa do livro ${livro.titulo}" class="livro-capa" onerror="this.onerror=null;this.src='${placeholderCapa}';">
@@ -679,12 +696,29 @@ function mostrarDetalhesLivro(id) {
     document.getElementById('modal-genero-livro').innerHTML = `<strong>Gênero:</strong> ${livro.genero}`;
     document.getElementById('modal-ano-livro').innerHTML = `<strong>Ano de Lançamento:</strong> ${livro.ano}`;
 
+    // Atualiza status de disponibilidade e botão no modal
+    const statusContainer = document.getElementById('modal-status-livro');
+    const btnContainer = document.getElementById('modal-botao-container');
+    
+    if (statusContainer && btnContainer) {
+        const emprestados = emprestimos.filter(e => e.livro === livro.titulo && (e.status === 'ABERTO' || e.status === 'ATRASADO')).length;
+        const disponiveis = livro.estoque - emprestados;
+
+        if (disponiveis > 0) {
+            statusContainer.innerHTML = `<span class="status-disponivel">● Disponível (${disponiveis} unidades)</span>`;
+            btnContainer.innerHTML = `<button class="btn-primary" style="width: 100%" onclick="solicitarLivro(${livro.id})">Solicitar Empréstimo</button>`;
+        } else {
+            statusContainer.innerHTML = `<span class="status-indisponivel">● Indisponível no momento</span>`;
+            btnContainer.innerHTML = `<button class="btn-primary" style="width: 100%; background: #bdc3c7; cursor: not-allowed;" disabled>Indisponível</button>`;
+        }
+    }
+
     document.getElementById('livro-detalhes-modal').style.display = 'flex';
 }
 
 // Função para fechar o modal de detalhes do livro
 function fecharDetalhesLivro() {
-    document.getElementById('livro-detalhes-modal').style.display = 'none';
+    fecharModalComAnimacao('livro-detalhes-modal');
 }
 
 // Debounce para limitar chamadas de API ao digitar
@@ -773,7 +807,7 @@ if (document.getElementById('form-livro')) {
         livros.push(novoLivro);
         renderizarLivros();
         this.reset();
-        adicionarNotificacao('Acervo Atualizado', `O livro "${novoLivro.titulo}" foi adicionado ao catálogo.`);
+        adicionarNotificacao('Acervo Atualizado', `O livro "${novoLivro.titulo}" foi adicionado ao catálogo.`, 'baixa');
         alert('Livro adicionado com sucesso!');
     });
 
@@ -803,18 +837,24 @@ function toggleDropdownNotificacoes() {
     }
 }
 
-function adicionarNotificacao(titulo, mensagem) {
+function adicionarNotificacao(titulo, mensagem, prioridade = 'baixa') {
     const novaNotificacao = {
         id: Date.now(),
         titulo: titulo,
         mensagem: mensagem,
         data: new Date().toLocaleDateString('pt-BR'),
-        lida: false
+        lida: false,
+        prioridade: prioridade
     };
     notificacoes.unshift(novaNotificacao); // Adiciona no início
     localStorage.setItem('notificacoes', JSON.stringify(notificacoes));
     atualizarContadorNotificacoes();
     renderizarDropdownNotificacoes(); // Atualiza o dropdown em tempo real
+
+    // Toca o som apenas se a notificação for considerada urgente (alta prioridade)
+    if (prioridade === 'alta') {
+        playNotificationSound();
+    }
 }
 
 function atualizarContadorNotificacoes() {
@@ -824,6 +864,13 @@ function atualizarContadorNotificacoes() {
     badges.forEach(badge => {
         badge.textContent = naoLidas;
         badge.style.display = naoLidas > 0 ? 'inline-block' : 'none';
+    });
+
+    // Adiciona ou remove o efeito de pulso no ícone do sino conforme o status das notificações
+    const sinos = document.querySelectorAll('.sino-notificacao');
+    sinos.forEach(sino => {
+        if (naoLidas > 0) sino.classList.add('animar-pulso');
+        else sino.classList.remove('animar-pulso');
     });
 }
 
@@ -843,9 +890,10 @@ function renderizarDropdownNotificacoes() {
 
     notificacoesRecentes.forEach(n => {
         const classeLida = n.lida ? '' : 'nao-lida';
+        const classePrioridade = n.prioridade === 'alta' ? 'prioridade-alta' : '';
         // A notificação inteira se torna um botão para marcar como lida
         const html = `
-            <div class="notificacao-item ${classeLida}" onclick="marcarNotificacaoComoLida(${n.id})">
+            <div class="notificacao-item ${classeLida} ${classePrioridade}" onclick="marcarNotificacaoComoLida(${n.id})">
                 <div class="notificacao-info">
                     <h4>${n.titulo}</h4>
                     <p>${n.mensagem}</p>
@@ -874,12 +922,13 @@ function renderizarPaginaNotificacoes() {
 
     notificacoes.forEach(n => {
         const classeLida = n.lida ? '' : 'nao-lida';
+        const classePrioridade = n.prioridade === 'alta' ? 'prioridade-alta' : '';
         const botaoMarcar = !n.lida ? 
             `<button class="btn-acao" style="color: #3498db; font-size: 0.8rem;" onclick="marcarNotificacaoComoLida(${n.id})">Marcar como lida</button>` : 
             '<span style="color: #27ae60; font-size: 0.8rem;">✓ Lida</span>';
 
         const html = `
-            <div class="notificacao-item ${classeLida}">
+            <div class="notificacao-item ${classeLida} ${classePrioridade}">
                 <div class="notificacao-info">
                     <h4>${n.titulo}</h4>
                     <p>${n.mensagem}</p>
@@ -946,12 +995,18 @@ function navegar(secaoId, event = null) {
         }
     });
 
+    const isAdmin = localStorage.getItem('userRole') === 'admin';
+
     // Se a seção for de alunos, renderiza a tabela de alunos
     if (secaoId === 'alunos') {
+        if (!isAdmin) {
+            alert('Acesso restrito: Apenas administradores podem acessar a gestão de alunos.');
+            navegar('home');
+            return;
+        }
         renderizarTabelaAlunos();
     } else if (secaoId === 'livros') {
         const formContainer = document.getElementById('form-livro-container');
-        const isAdmin = true; // Modo admin ativado
         if (formContainer) {
             if (isAdmin) {
                 formContainer.style.display = 'block';
@@ -960,7 +1015,7 @@ function navegar(secaoId, event = null) {
             }
         }
         renderizarLivros();
-    } else if (['destaques', 'favoritos', 'catalogo'].includes(secaoId)) {
+    } else if (['home', 'destaques', 'favoritos', 'catalogo'].includes(secaoId)) {
         renderizarTudo();
     } else if (secaoId === 'clube-livro') {
         renderizarChat();
@@ -969,9 +1024,16 @@ function navegar(secaoId, event = null) {
 
 // Função de Logout
 function logout() {
-    localStorage.removeItem('usuarioLogado');
-    localStorage.removeItem('userRole');
-    window.location.href = 'login.html';
+    // Adiciona a classe de fade-out ao body para uma transição suave
+    document.body.classList.add('fade-out');
+
+    // Aguarda o tempo da animação (500ms) antes de redirecionar
+    setTimeout(() => {
+        localStorage.removeItem('usuarioLogado');
+        localStorage.removeItem('userRole');
+        // Nota: Removendo o clear global das mensagens para suportar a persistência por usuário
+        window.location.href = 'login.html';
+    }, 500);
 }
 
 // Inicializar
@@ -985,6 +1047,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const micBtn = document.getElementById('ai-mic-btn');
     if (micBtn) {
         micBtn.addEventListener('click', startVoiceRecognition);
+    }
+
+    // Ativa a escuta passiva do comando de voz "Ok BiblioTech"
+    iniciarEscutaHotword();
+
+    // Controle de visibilidade do menu lateral baseado no perfil
+    const isAdmin = localStorage.getItem('userRole') === 'admin';
+    const navItemAlunos = document.getElementById('nav-item-alunos');
+    if (navItemAlunos) {
+        navItemAlunos.style.display = isAdmin ? 'block' : 'none';
     }
 
     // --- Lógica do Controle de Som ---
@@ -1024,6 +1096,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (themeToggle) {
         themeToggle.addEventListener('change', () => {
             applyTheme(themeToggle.checked);
+            playClickSound();
             localStorage.setItem('theme', themeToggle.checked ? 'dark' : 'light');
         });
     }
@@ -1121,6 +1194,134 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- Funções de Destaques, Favoritos, Recomendações (do home.html) ---
 let favoritos = JSON.parse(localStorage.getItem('meus_favoritos')) || [];
 
+// Novo: Armazena os livros curtidos por cada usuário
+let userLikes = JSON.parse(localStorage.getItem('user_likes')) || {};
+
+/**
+ * Adiciona ou remove um livro da lista de curtidas do usuário logado.
+ * Atualiza o localStorage e re-renderiza a interface.
+ * @param {number} bookId O ID do livro a ser curtido/descurtido.
+ */
+function toggleLike(bookId) {
+    const usuarioLogado = localStorage.getItem('usuarioLogado');
+    if (!usuarioLogado) {
+        alert('Você precisa estar logado para curtir um livro!');
+        return;
+    }
+
+    // Garante que o array de likes para o usuário existe
+    if (!userLikes[usuarioLogado]) {
+        userLikes[usuarioLogado] = [];
+    }
+
+    const index = userLikes[usuarioLogado].indexOf(bookId);
+    const livroCurtido = livros.find(l => l.id === bookId);
+
+    if (index === -1) {
+        userLikes[usuarioLogado].push(bookId);
+        playClickSound(); // Feedback sonoro para curtir
+        adicionarNotificacao('Livro Curtido', `Você curtiu o livro "${livroCurtido.titulo}".`, 'baixa');
+    } else {
+        userLikes[usuarioLogado].splice(index, 1);
+        adicionarNotificacao('Livro Descurtido', `Você descurtiu o livro "${livroCurtido.titulo}".`, 'baixa');
+/**
+ * Renderiza o painel de estatísticas rápidas na Home
+ */
+function renderizarEstatisticas() {
+    const container = document.getElementById('stats-dashboard');
+    if (!container) return;
+
+    const totalLivros = livros.length;
+    const totalAlunos = alunos.length;
+    const emprestimosAtivos = emprestimos.filter(e => e.status !== 'CONCLUIDO').length;
+    const totalAtrasados = emprestimos.filter(e => e.status === 'ATRASADO').length;
+
+    container.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-info">
+                <span class="stat-value">${totalLivros}</span>
+                <span class="stat-label">Livros</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+                <span class="stat-value">${totalAlunos}</span>
+                <span class="stat-label">Alunos</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📑</div>
+            <div class="stat-info">
+                <span class="stat-value">${emprestimosAtivos}</span>
+                <span class="stat-label">Ativos</span>
+            </div>
+        </div>
+        <div class="stat-card ${totalAtrasados > 0 ? 'atrasado-alerta' : ''}">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-info">
+                <span class="stat-value">${totalAtrasados}</span>
+                <span class="stat-label">Atrasos</span>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Calcula o gênero mais frequente nos empréstimos do usuário logado
+ */
+function obterGeneroFavorito(usuarioNome) {
+    const meusEmprestimos = emprestimos.filter(e => e.aluno === usuarioNome);
+    if (meusEmprestimos.length === 0) return null;
+
+    const contagemGeneros = {};
+    meusEmprestimos.forEach(emp => {
+        const livro = livros.find(l => l.titulo === emp.livro);
+        if (livro) {
+            contagemGeneros[livro.genero] = (contagemGeneros[livro.genero] || 0) + 1;
+        }
+    });
+
+    // Retorna o gênero com maior contagem
+    return Object.keys(contagemGeneros).reduce((a, b) => contagemGeneros[a] > contagemGeneros[b] ? a : b);
+}
+
+/**
+ * Renderiza livros recomendados baseados no perfil de leitura do aluno
+ */
+function renderizarRecomendacoesPerfil() {
+    const container = document.getElementById('recomendacoes-perfil-container');
+    if (!container) return;
+
+    const usuarioLogado = localStorage.getItem('usuarioLogado');
+    if (!usuarioLogado) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const generoFavorito = obterGeneroFavorito(usuarioLogado);
+    
+    if (!generoFavorito) {
+        container.innerHTML = `
+            <div class="card-informativo">
+                <p>💡 <strong>Dica:</strong> Pegue seu primeiro livro emprestado para receber recomendações personalizadas!</p>
+            </div>`;
+        return;
+    }
+
+    // Filtra livros do mesmo gênero que o usuário ainda não pegou (opcional, aqui pegamos todos do gênero)
+    const sugestoes = livros.filter(l => l.genero === generoFavorito).slice(0, 4);
+
+    container.innerHTML = `
+        <h2 style="margin-top: 30px;">🎯 Recomendado para seu perfil: ${generoFavorito}</h2>
+        <div class="grid-livros" id="grid-recomendacoes-perfil"></div>
+    `;
+
+    const grid = document.getElementById('grid-recomendacoes-perfil');
+    sugestoes.forEach((l, i) => grid.appendChild(criarCard(l, mostrarRecomendacoes, i * 0.1)));
+}
+
 // Estrelas
 function gerarEstrelas(nota) {
     let html = '';
@@ -1131,10 +1332,13 @@ function gerarEstrelas(nota) {
 }
 
 // Criar Card
-function criarCard(livro, callback) {
+function criarCard(livro, callback, delay = 0) {
     const card = document.createElement('div');
     card.className = 'livro-card';
     card.onclick = () => callback(livro);
+    // Aplica o efeito de stagger (atraso na animação)
+    card.style.animationDelay = `${delay}s`;
+    
     // Adiciona o ID do livro ao card para facilitar a identificação
     const isFav = favoritos.includes(livro.id);
     
@@ -1174,11 +1378,13 @@ function mostrarRecomendacoes(selecionado) {
 }
 
 function renderizarTudo() {
+    renderizarEstatisticas();
+    renderizarRecomendacoesPerfil();
     // Destaques
     const gridDestaques = document.getElementById('grid-destaques');
     if (gridDestaques) {
         gridDestaques.innerHTML = '';
-        livros.filter(l => l.avaliacao === 5).forEach(l => gridDestaques.appendChild(criarCard(l, mostrarRecomendacoes)));
+        livros.filter(l => l.avaliacao === 5).forEach((l, i) => gridDestaques.appendChild(criarCard(l, mostrarRecomendacoes, i * 0.08)));
     }
 
     // Favoritos
@@ -1189,7 +1395,7 @@ function renderizarTudo() {
         const listaFav = livros.filter(l => favoritos.includes(l.id));
         if (listaFav.length > 0) {
             if (secaoFav) secaoFav.style.display = 'block';
-            listaFav.forEach(l => gridFav.appendChild(criarCard(l, mostrarRecomendacoes)));
+            listaFav.forEach((l, i) => gridFav.appendChild(criarCard(l, mostrarRecomendacoes, i * 0.08)));
         } else if (secaoFav) { 
             secaoFav.style.display = 'none'; 
         }
@@ -1199,7 +1405,7 @@ function renderizarTudo() {
     const catalogo = document.getElementById('catalogo');
     if (catalogo) {
         catalogo.innerHTML = '';
-        livros.forEach(l => catalogo.appendChild(criarCard(l, mostrarRecomendacoes)));
+        livros.forEach((l, i) => catalogo.appendChild(criarCard(l, mostrarRecomendacoes, i * 0.05)));
     }
 }
 
@@ -1210,7 +1416,8 @@ function reagirMensagem(id) {
     const index = mensagensChat.findIndex(m => m.id === id);
     if (index !== -1) {
         mensagensChat[index].likes = (mensagensChat[index].likes || 0) + 1;
-        localStorage.setItem('chat_messages', JSON.stringify(mensagensChat));
+        const user = localStorage.getItem('usuarioLogado') || 'default';
+        localStorage.setItem(`chat_messages_${user}`, JSON.stringify(mensagensChat));
         renderizarChat(); // Re-renderiza para atualizar os contadores na tela
     }
 }
@@ -1220,7 +1427,7 @@ const chatForm = document.getElementById('chat-form');
 const chatWindow = document.getElementById('chat-window');
 const chatInput = document.getElementById('chat-input');
 
-let mensagensChat = JSON.parse(localStorage.getItem('chat_messages')) || [];
+let mensagensChat = []; // Inicializado dinamicamente no renderizarChat
 
 function addChatMessage(text, type, user = "Usuário", time = null, save = true, image = null, id = Date.now(), likes = 0) {
     const currentTime = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1247,14 +1454,19 @@ function addChatMessage(text, type, user = "Usuário", time = null, save = true,
     }
 
     if (save) {
+        const userLogged = localStorage.getItem('usuarioLogado') || 'default';
         mensagensChat.push({ id, text, type, user, time: currentTime, image, likes });
-        localStorage.setItem('chat_messages', JSON.stringify(mensagensChat));
+        localStorage.setItem(`chat_messages_${userLogged}`, JSON.stringify(mensagensChat));
     }
 }
 
 function renderizarChat() {
     if (!chatWindow || document.getElementById('secao-clube-livro').style.display === 'none') return; // Verifica se o elemento existe e a seção está visível
     chatWindow.innerHTML = '';
+
+    const user = localStorage.getItem('usuarioLogado') || 'default';
+    mensagensChat = JSON.parse(localStorage.getItem(`chat_messages_${user}`)) || [];
+
     if (mensagensChat.length === 0) {
         addChatMessage("Bem-vindos ao clube! O que estão lendo hoje?", 'received', "BiblioBot");
     } else {
@@ -1263,8 +1475,9 @@ function renderizarChat() {
 }
 function limparChat() {
     if (confirm("Deseja realmente apagar todo o histórico de conversas?")) {
+        const user = localStorage.getItem('usuarioLogado') || 'default';
         mensagensChat = [];
-        localStorage.removeItem('chat_messages');
+        localStorage.removeItem(`chat_messages_${user}`);
         renderizarChat();
     }
 }
@@ -1353,10 +1566,12 @@ const GREETINGS_IA = [
     "Conectando você ao conhecimento de forma inovadora."
 ];
 
-let aiChatMessages = JSON.parse(localStorage.getItem('ai_chat_messages')) || [];
+let aiChatMessages = []; // Inicializado no openAIAssistant
 
 // Contexto de áudio global para o assistente (Web Audio API)
 let aiAudioCtx = null;
+let recognitionHotword = null;
+let isHotwordEnabled = true;
 
 /**
  * Gera um som sutil de clique de teclado programaticamente.
@@ -1390,19 +1605,76 @@ function playTypingSound() {
     }
 }
 
+/**
+ * Gera um som de "click" mecânico curto.
+ */
+function playClickSound() {
+    try {
+        const soundToggle = document.getElementById('sound-toggle');
+        if (soundToggle && !soundToggle.checked) return;
+
+        if (!aiAudioCtx) aiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (aiAudioCtx.state === 'suspended') aiAudioCtx.resume();
+
+        const osc = aiAudioCtx.createOscillator();
+        const gain = aiAudioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, aiAudioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, aiAudioCtx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.1, aiAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, aiAudioCtx.currentTime + 0.05);
+
+        osc.connect(gain);
+        gain.connect(aiAudioCtx.destination);
+        osc.start();
+        osc.stop(aiAudioCtx.currentTime + 0.05);
+    } catch (e) {}
+}
+
+/**
+ * Gera um som suave de notificação (chime).
+ */
+function playNotificationSound() {
+    try {
+        const soundToggle = document.getElementById('sound-toggle');
+        if (soundToggle && !soundToggle.checked) return;
+
+        if (!aiAudioCtx) aiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (aiAudioCtx.state === 'suspended') aiAudioCtx.resume();
+
+        const osc = aiAudioCtx.createOscillator();
+        const gain = aiAudioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, aiAudioCtx.currentTime); // Nota C5
+        osc.frequency.exponentialRampToValueAtTime(659.25, aiAudioCtx.currentTime + 0.15); // Sobe para E5
+
+        gain.gain.setValueAtTime(0.1, aiAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, aiAudioCtx.currentTime + 0.4);
+
+        osc.connect(gain);
+        gain.connect(aiAudioCtx.destination);
+        osc.start();
+        osc.stop(aiAudioCtx.currentTime + 0.4);
+    } catch (e) {}
+}
+
 function openAIAssistant() {
     // Inicializa o contexto de áudio no primeiro clique (requisito de segurança dos navegadores)
     if (!aiAudioCtx) aiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
     if (aiModal) { // Verifica se o modal existe
         aiModal.style.display = 'flex'; // Mostra o modal
+        const user = localStorage.getItem('usuarioLogado') || 'default';
+        aiChatMessages = JSON.parse(localStorage.getItem(`ai_chat_messages_${user}`)) || [];
         renderAIChat();
         aiMessageInput.focus();
     }
 }
 
 function closeAIAssistant() {
-    if (aiModal) aiModal.style.display = 'none';
+    fecharModalComAnimacao('ai-assistant-modal', '.ai-modal-content');
 }
 
 function addAIMessage(text, type, save = true, isTypewriter = false) {
@@ -1452,19 +1724,30 @@ function addAIMessage(text, type, save = true, isTypewriter = false) {
     }
 
     if (save) {
+        const user = localStorage.getItem('usuarioLogado') || 'default';
         aiChatMessages.push({ text, type, time: currentTime });
-        localStorage.setItem('ai_chat_messages', JSON.stringify(aiChatMessages));
+        localStorage.setItem(`ai_chat_messages_${user}`, JSON.stringify(aiChatMessages));
     }
 }
 
 function renderAIChat() {
     if (!aiChatWindow) return; // Verifica se o elemento da janela de chat da IA existe
     aiChatWindow.innerHTML = '';
-    
-    // Escolhe uma saudação aleatória toda vez que abre
-    const randomGreeting = GREETINGS_IA[Math.floor(Math.random() * GREETINGS_IA.length)];
-    
-    addAIMessage(randomGreeting, 'received', false);
+
+    if (aiChatMessages.length === 0) {
+        // Escolhe uma saudação aleatória se não houver histórico
+        const randomGreeting = GREETINGS_IA[Math.floor(Math.random() * GREETINGS_IA.length)];
+        addAIMessage(randomGreeting, 'received', false);
+    } else {
+        // Renderiza o histórico salvo para o usuário
+        aiChatMessages.forEach(m => {
+            const msg = document.createElement('div');
+            msg.className = `message ${m.type}`;
+            msg.innerHTML = `<span>${m.text}</span><span class="chat-time">${m.time}</span>`;
+            aiChatWindow.appendChild(msg);
+        });
+        aiChatWindow.scrollTop = aiChatWindow.scrollHeight;
+    }
 }
 
 function showAITypingIndicator() {
@@ -1483,73 +1766,50 @@ function hideAITypingIndicator() {
     if (indicator) indicator.remove();
 }
 
-function processAIInput(input) {
-    const lowerInput = input.toLowerCase();
-    let response = "Não consegui encontrar algo específico sobre isso no acervo. Que tal buscar por um gênero (como Fantasia) ou um título?";
+/**
+ * Chama a API do Gemini para processar a pergunta do usuário com base no acervo atual.
+ */
+async function processAIInput(userMessage) {
+    const url = `http://localhost:3000/api/chat`;
 
-    // Respostas gerais
-    if (lowerInput.includes("olá") || lowerInput.includes("oi") || lowerInput.trim() === "ia") {
-        response = "Olá! Posso te ajudar a encontrar livros, autores ou gêneros. O que você gostaria de saber?";
-    } else if (lowerInput.includes("obrigado") || lowerInput.includes("valeu")) {
-        response = "De nada! Fico feliz em ajudar.";
-    }
+    // Preparamos o contexto da biblioteca para a IA
+    const contextoSistema = `Você é o BiblioBot, assistente da biblioteca BiblioTech. 
+    O acervo atual em JSON é: ${JSON.stringify(livros.map(l => ({titulo: l.titulo, autor: l.autor, genero: l.genero, estoque: l.estoque})))}.
+    Responda de forma curta e amigável. Se o usuário pedir recomendação, use apenas os livros do acervo.`;
 
-    // Lógica de Recomendação (Melhores Avaliados)
-    if (lowerInput.includes("recomende") || lowerInput.includes("sugira") || lowerInput.includes("melhores")) {
-        const topLivros = livros.filter(l => l.avaliacao === 5);
-        if (topLivros.length > 0) {
-            const sorteado = topLivros[Math.floor(Math.random() * topLivros.length)];
-            return `Com certeza! Eu recomendo "${sorteado.titulo}". Ele tem nota máxima (5 estrelas) e é um dos favoritos dos nossos leitores.`;
-        }
-    }
+    const payload = {
+        userMessage: userMessage,
+        context: contextoSistema
+    };
 
-    // Lógica de Disponibilidade
-    if (lowerInput.includes("tem") || lowerInput.includes("disponível") || lowerInput.includes("estoque")) {
-        const livroEncontrado = livros.find(l => lowerInput.includes(l.titulo.toLowerCase()));
-        if (livroEncontrado) {
-            const emprestados = emprestimos.filter(e => e.livro === livroEncontrado.titulo && (e.status === 'ABERTO' || e.status === 'ATRASADO')).length;
-            const disponiveis = livroEncontrado.estoque - emprestados;
-            return disponiveis > 0 
-                ? `Sim! Temos ${disponiveis} cópias de "${livroEncontrado.titulo}" disponíveis para empréstimo imediato.` 
-                : `No momento, todas as cópias de "${livroEncontrado.titulo}" estão emprestadas.`;
-        }
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        console.error("Erro na API da IA:", error);
+        return "Desculpe, estou com problemas para me conectar ao meu cérebro digital. Tente novamente em instantes!";
     }
-    
-    // Busca por gênero
-    const generosUnicos = [...new Set(livros.map(l => l.genero.toLowerCase()))];
-    for (const genero of generosUnicos) {
-        if (lowerInput.includes(genero)) {
-            const livrosDoGenero = livros.filter(l => l.genero.toLowerCase() === genero);
-            const titulos = livrosDoGenero.slice(0, 3).map(l => l.titulo).join(', ');
-            return `No gênero "${genero}", temos livros como: ${titulos}. Algum deles te interessa?`;
-        }
-    }
-
-    // Busca por título ou autor
-    const livroEncontrado = livros.find(l => 
-        lowerInput.includes(l.titulo.toLowerCase()) || 
-        lowerInput.includes(l.autor.toLowerCase())
-    );
-    if (livroEncontrado) {
-        response = `Ah, você está perguntando sobre "${livroEncontrado.titulo}"! É uma obra de ${livroEncontrado.genero} escrita por ${livroEncontrado.autor}.`;
-    }
-
-    return response;
 }
 
 if (aiChatForm) { // Adiciona o listener apenas se o formulário do chat da IA existir
-    aiChatForm.addEventListener('submit', (e) => {
+    aiChatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const userMessage = aiMessageInput.value.trim();
         if (!userMessage) return;
         addAIMessage(userMessage, 'sent');
         aiMessageInput.value = '';
         showAITypingIndicator();
-        setTimeout(() => {
-            hideAITypingIndicator();
-            const aiResponse = processAIInput(userMessage);
-            addAIMessage(aiResponse, 'received', true, true);
-        }, 1500);
+        
+        // Chamada real para a IA
+        const aiResponse = await processAIInput(userMessage);
+        
+        hideAITypingIndicator();
+        addAIMessage(aiResponse, 'received', true, true);
     });
 }
 
@@ -1591,6 +1851,69 @@ function startVoiceRecognition() {
     };
 
     recognition.start();
+}
+
+/**
+ * Inicia a escuta em segundo plano pelo comando de ativação "Ok BiblioTech".
+ */
+function iniciarEscutaHotword() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    // Verificação silenciosa (não alerta se falhar aqui para não incomodar o usuário)
+    if (!SpeechRecognition) return;
+
+    recognitionHotword = new SpeechRecognition();
+    recognitionHotword.lang = 'pt-BR';
+    recognitionHotword.continuous = true; // Mantém a escuta ativa
+    recognitionHotword.interimResults = false;
+    const listeningBar = document.getElementById('ai-listening-bar');
+
+    recognitionHotword.onstart = () => {
+        if (listeningBar) listeningBar.style.display = 'flex';
+    };
+
+    recognitionHotword.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+        
+        // Verifica se a frase de ativação foi detectada
+        if (transcript.includes('ok bibliotech') || transcript.includes('ok biblioteca')) {
+            // Aplica efeito visual em todos os logos encontrados
+            const logos = document.querySelectorAll('.logo');
+            logos.forEach(logo => {
+                logo.classList.add('logo-listening-effect');
+                // Remove a classe após a animação (1s) para poder disparar novamente depois
+                setTimeout(() => logo.classList.remove('logo-listening-effect'), 1000);
+            });
+
+            openAIAssistant();
+        }
+    };
+
+    recognitionHotword.onerror = () => {
+        if (listeningBar) listeningBar.style.display = 'none';
+    };
+
+    // Reinicia automaticamente se o navegador interromper por silêncio
+    recognitionHotword.onend = () => { 
+        if (listeningBar) listeningBar.style.display = 'none';
+        if (isHotwordEnabled) {
+            try { recognitionHotword.start(); } catch(e) {} 
+        }
+    };
+
+    try { recognitionHotword.start(); } catch (e) {}
+}
+
+/**
+ * Desativa temporariamente o comando de ativação por voz.
+ */
+function pararEscutaHotword() {
+    isHotwordEnabled = false;
+    if (recognitionHotword) {
+        recognitionHotword.stop();
+    }
+    const listeningBar = document.getElementById('ai-listening-bar');
+    if (listeningBar) listeningBar.style.display = 'none';
 }
 
 // Função auxiliar para obter o título da seção

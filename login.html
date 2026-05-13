@@ -3,279 +3,687 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BiblioTech - Acesso</title>
+    <title>BiblioTech - Login</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Importando fontes elegantes do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos para a animação de sucesso no registro */
+        .success-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 3000;
+            backdrop-filter: blur(8px);
+            color: white;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        /* Botão para trocar a frase manualmente */
+        .btn-trocar-frase {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .btn-trocar-frase:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        /* Correção para evitar sobreposição de abas */
+        .login-form-side > div {
+            display: none; /* Esconde todas por padrão */
+            width: 100%;
+        }
+        .login-form-side > div.active {
+            display: block; /* Mostra apenas a ativa */
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
     <div class="login-container">
+        <!-- Tela de Carregamento -->
+        <div id="loader-overlay" class="loader-overlay">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Entrando...</p>
+        </div>
+
+        <!-- Tela de Sucesso no Registro -->
+        <div id="success-overlay" class="success-overlay">
+            <div class="success-icon">✅</div>
+            <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 10px;">Conta Criada!</h2>
+            <p style="font-family: 'Poppins', sans-serif; opacity: 0.9;">Redirecionando para o login...</p>
+        </div>
+
         <div class="login-card">
             <!-- Lado da Imagem (Decorativo) -->
             <div class="login-image-side">
                 <div class="overlay-content">
                     <h2 id="frase-destaque"></h2>
                     <p id="autor-frase"></p>
+                    <button onclick="atualizarFrase()" class="btn-trocar-frase" title="Trocar Frase">🔄</button>
                 </div>
             </div>
 
             <!-- Lado do Formulário -->
             <div class="login-form-side">
-                <!-- Botão de Modo Noturno -->
-                <div class="theme-switch-wrapper" style="position: absolute; top: 20px; right: 20px;">
-                    <label class="theme-switch" for="theme-toggle">
-                        <input type="checkbox" id="theme-toggle" />
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-
-                <div class="login-header">
-                    <h1>Acessar</h1>
-                    <p>Acesse o portal de gestão do conhecimento.</p>
-                </div>
-                
-                <form onsubmit="realizarLogin(event)" novalidate>
-                    <div class="form-group">
-                        <label for="usuario">Usuário / Matrícula</label>
-                        <input type="text" id="usuario" placeholder="Ex: admin" required>
+                <!-- Visão de Login (ativa por padrão) -->
+                <div id="login-view" class="active">
+                    <div class="login-header">
+                        <h1>Login</h1>
+                        <p>Acesse o portal de gestão do conhecimento.</p>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="senha">Senha</label>
-                        <input type="password" id="senha" placeholder="Sua senha" required>
-                    </div>
+                    <form onsubmit="realizarLogin(event)">
+                        <div class="form-group">
+                            <input type="text" id="usuario" placeholder=" " required>
+                            <label for="usuario">Matrícula / Email / Telefone</label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="password" id="senha" placeholder=" " required>
+                            <label for="senha">Senha</label>
+                            <span id="toggle-senha" class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+                        </div>
 
-                    <button type="submit" class="btn-primary full-width">Entrar</button>
-                </form>
-                
-                <div class="login-footer">
-                    <a href="#" onclick="abrirModalRecuperarSenha(event)">Esqueci minha senha</a>
+                        <button type="submit" class="btn-primary full-width">Entrar</button>
+                    </form>
+                    
+                    <div class="login-footer">
+                        <span id="register-link-container">Não tem uma conta? <a href="#" onclick="toggleViews(event, 'register')">Registre-se</a></span>
+                        <br><a href="#" onclick="toggleViews(event, 'forgot-password')">Esqueci minha senha</a>
+                    </div>
+                </div>
+
+                <!-- Visão de Registro -->
+                <div id="register-view">
+                    <div class="login-header">
+                        <h1>Registrar</h1>
+                        <p>Crie sua conta de aluno para acessar o sistema.</p>
+                    </div>
+                    <form onsubmit="realizarRegistro(event)">
+                        <div class="form-group">
+                            <input type="text" id="register-nome" placeholder=" " required oninput="verificarEstadoFormRegistro()">
+                            <label for="register-nome">Nome Completo</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="register-matricula" placeholder=" " required oninput="verificarEstadoFormRegistro()">
+                            <label for="register-matricula">Matrícula (Ex: RA12345)</label>
+                            <small id="matricula-feedback" class="form-text"></small>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="register-senha" placeholder=" " required oninput="verificarEstadoFormRegistro()">
+                            <label for="register-senha">Senha</label>
+                        </div>
+                        <ul class="password-requirements" id="password-strength-feedback" style="display: none;">
+                            <li id="length-check">Pelo menos 8 caracteres</li>
+                            <li id="case-check">Letras maiúsculas e minúsculas</li>
+                            <li id="number-check">Pelo menos um número</li>
+                        </ul>
+                        <button type="submit" class="btn-primary full-width" id="register-submit-btn" disabled>Criar Conta</button>
+                    </form>
+                    <div class="login-footer">
+                        <span>Já tem uma conta? <a href="#" onclick="toggleViews(event, 'login')">Faça o login</a></span>
+                    </div>
+                </div>
+
+                <!-- Visão de Esqueci a Senha -->
+                <div id="forgot-password-view">
+                    <div class="login-header">
+                        <h1>Recuperar Senha</h1>
+                        <p>Insira sua matrícula ou e-mail para identificar sua conta.</p>
+                    </div>
+                    <form onsubmit="recuperarSenha(event)">
+                        <div class="form-group">
+                            <input type="text" id="forgot-identifier" placeholder=" " required oninput="this.value = this.value.toUpperCase()">
+                            <label for="forgot-identifier">Matrícula ou E-mail</label>
+                        </div>
+                        <button type="submit" class="btn-primary full-width">Identificar Usuário</button>
+                    </form>
+                    <div class="login-footer">
+                        <span>Lembrou a senha? <a href="#" onclick="toggleViews(event, 'login')">Faça o login</a></span>
+                    </div>
+                </div>
+
+                <!-- Visão de Alterar Senha -->
+                <div id="reset-password-view">
+                    <div class="login-header">
+                        <h1>Nova Senha</h1>
+                        <p>Crie uma senha forte para sua segurança.</p>
+                    </div>
+                    <form onsubmit="realizarAlteracaoSenha(event)">
+                        <div class="form-group">
+                            <input type="password" id="reset-nova-senha" placeholder=" " required oninput="verificarEstadoFormReset()">
+                            <label for="reset-nova-senha">Nova Senha</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="reset-confirmar-senha" placeholder=" " required oninput="verificarEstadoFormReset()">
+                            <label for="reset-confirmar-senha">Confirmar Nova Senha</label>
+                        </div>
+                        <ul class="password-requirements" id="password-strength-feedback-reset" style="display: none;">
+                            <li id="reset-length-check">Pelo menos 8 caracteres</li>
+                            <li id="reset-case-check">Letras maiúsculas e minúsculas</li>
+                            <li id="reset-number-check">Pelo menos um número</li>
+                        </ul>
+                        <button type="submit" class="btn-primary full-width" id="reset-submit-btn" disabled>Redefinir Senha</button>
+                    </form>
+                    <div class="login-footer">
+                        <span>Lembrou a senha? <a href="#" onclick="toggleViews(event, 'login')">Faça o login</a></span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Recuperação de Senha -->
-    <div id="recuperar-senha-modal" class="modal">
-        <div class="modal-content" style="max-width: 450px;">
-            <span class="close-button" onclick="fecharModalRecuperarSenha()">&times;</span>
-            <h2>Redefinir Senha</h2>
-            <p>Informe sua matrícula ou e-mail para iniciar a redefinição. (Simulação)</p>
-            <form onsubmit="recuperarSenha(event)">
-                <div class="form-group">
-                    <label for="matricula-recuperar">Matrícula ou E-mail</label>
-                    <input type="text" id="matricula-recuperar" placeholder="Sua matrícula" required>
-                </div>
-                <button type="submit" class="btn-primary full-width">Recuperar</button>
-            </form>
-            <div id="resultado-recuperacao" style="margin-top: 20px; text-align: center;"></div>
-        </div>
-    </div>
-
-    <!-- Tela de Carregamento com Animação de Livro -->
-    <div id="loading-overlay">
-        <div class="book">
-            <div class="book__pg-shadow"></div>
-            <div class="book__pg"></div>
-            <div class="book__pg book__pg--2"></div>
-            <div class="book__pg book__pg--3"></div>
-            <div class="book__pg book__pg--4"></div>
-            <div class="book__pg book__pg--5"></div>
-        </div>
-        <p>Verificando, aguarde...</p>
-    </div>
-
-    <!-- Tela de Sucesso (Acesso Concedido) -->
-    <div id="success-overlay">
-        <div class="success-icon">✔️</div>
-        <div class="success-message">Acesso Concedido!</div>
-        <p style="margin-top: 10px; font-size: 1.1rem; opacity: 0.9;">Redirecionando para a BiblioTech...</p>
-    </div>
-
     <script>
-        // Redirecionamento automático: se o usuário já estiver logado, vai direto para a home
-        if (localStorage.getItem('usuarioLogado')) {
-            window.location.href = "index.html";
-        }
-
         // Frases motivacionais aleatórias
         const frases = [
             { texto: "Um livro é um sonho que você segura na mão.", autor: "Neil Gaiman" },
-            { texto: "Ler é viajar sem sair do lugar.", autor: "Autor Desconhecido" },
+            { texto: "A literatura é a maneira mais agradável de ignorar a vida.", autor: "Fernando Pessoa" },
+            { texto: "A leitura de todos os bons livros é como uma conversa com as melhores mentes dos séculos passados.", autor: "René Descartes" },
+            { texto: "Ler é ganhar asas para o mundo.", autor: "Chris S. Bráz" },
             { texto: "A leitura engrandece a alma.", autor: "Voltaire" },
             { texto: "Quem não lê, mal fala, mal ouve, mal vê.", autor: "Malba Tahan" },
-            { texto: "Muitos homens iniciaram uma nova era na sua vida a partir da leitura de um livro.", autor: "Henry David Thoreau" },
             { texto: "Os livros não mudam o mundo, quem muda o mundo são as pessoas. Os livros só mudam as pessoas.", autor: "Mário Quintana" },
             { texto: "A leitura é para o intelecto o que o exercício é para o corpo.", autor: "Joseph Addison" },
-            { texto: "Sempre imaginei que o paraíso fosse uma espécie de livraria.", autor: "Jorge Luis Borges" }
+            { texto: "Sempre imaginei que o paraíso fosse uma espécie de biblioteca.", autor: "Jorge Luis Borges" },
+            { texto: "Um leitor vive mil vidas antes de morrer, o homem que nunca lê vive apenas uma.", autor: "George R. R. Martin" }
         ];
 
         // Seleciona uma frase aleatória ao carregar
         const fraseEl = document.getElementById('frase-destaque');
         const autorEl = document.getElementById('autor-frase');
+        let indiceAtual = -1; // Para garantir que a primeira seleção sempre aconteça
+        let trocandoFrase = false; // Trava para evitar sobreposição de animações
         
-        const indiceAleatorio = Math.floor(Math.random() * frases.length);
-        fraseEl.textContent = `"${frases[indiceAleatorio].texto}"`;
-        autorEl.textContent = `– ${frases[indiceAleatorio].autor}`;
+        // Função para o efeito de máquina de escrever
+        function typeWriter(element, text, speed, callback) {
+            let i = 0;
+            element.innerHTML = ''; // Limpa o conteúdo anterior
+            element.classList.add('typing'); // Adiciona a classe para mostrar o cursor
 
-        // --- Lógica do Modo Noturno ---
-        const darkModeToggle = document.getElementById('theme-toggle');
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        }
-
-        // Aplica o tema ao carregar a página
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            if (darkModeToggle) darkModeToggle.checked = true;
-        }
-
-        // Adiciona o evento de clique ao botão
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('change', toggleDarkMode);
-        }
-        // --- Fim da Lógica do Modo Noturno ---
-
-        // --- Lógica de Recuperação de Senha ---
-        // OBS: A lista de alunos é duplicada aqui para a simulação,
-        // pois a página de login não carrega o script.js principal.
-
-        /**
-         * Gera um som de sucesso (arpejo ascendente) via Web Audio API
-         */
-        function playSuccessSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const frequencias = [523.25, 659.25, 783.99, 1046.50]; // Notas C5, E5, G5, C6
-                
-                frequencias.forEach((freq, i) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (i * 0.1));
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + (i * 0.1));
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.1) + 0.4);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + (i * 0.1));
-                    osc.stop(audioCtx.currentTime + (i * 0.1) + 0.4);
-                });
-            } catch (e) { console.warn("Áudio bloqueado."); }
-        }
-
-        /**
-         * Gera partículas de confete na tela de sucesso
-         */
-        function lancarConfetes() {
-            const overlay = document.getElementById('success-overlay');
-            const cores = ['#f1c40f', '#e74c3c', '#3498db', '#9b59b6', '#2ecc71', '#f39c12', '#ffffff'];
-            
-            for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                
-                // Posicionamento e estilo aleatório
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
-                confetti.style.width = (Math.random() * 8 + 5) + 'px';
-                confetti.style.height = (Math.random() * 8 + 5) + 'px';
-                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                confetti.style.animationDelay = (Math.random() * 0.5) + 's';
-                
-                overlay.appendChild(confetti);
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typing'); // Remove a classe para esconder o cursor
+                    if (callback) {
+                        callback(); // Chama a função de callback (para mostrar o autor)
+                    }
+                }
             }
+            type();
         }
 
-        const mockAlunos = [
-            { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', senha: '123', email: 'maria.o@email.com' },
-            { id: 2, nome: 'Pedro Santos', matricula: 'RA002', senha: '456', email: 'pedro.s@email.com' },
-            { id: 3, nome: 'Davi Soares', matricula: 'admin', senha: 'admin', email: 'davi.s@email.com' }
+        function atualizarFrase() {
+            if (trocandoFrase) return; // Impede nova troca se uma animação estiver em curso
+            trocandoFrase = true;
+
+            let novoIndice;
+            // Garante que a nova frase não seja a mesma que a atual
+            do {
+                novoIndice = Math.floor(Math.random() * frases.length);
+            } while (frases.length > 1 && novoIndice === indiceAtual);
+            indiceAtual = novoIndice;
+            const fraseSelecionada = frases[indiceAtual];
+
+            // Efeito de fade out para a frase e autor
+            fraseEl.style.opacity = 0;
+            autorEl.style.opacity = 0;
+
+            setTimeout(() => {
+                fraseEl.style.opacity = 1; // Torna o container da frase visível
+                typeWriter(fraseEl, `"${fraseSelecionada.texto}"`, 50, () => {
+                    // Callback: quando a frase terminar, mostra o autor com fade in
+                    autorEl.textContent = `– ${fraseSelecionada.autor}`;
+                    autorEl.style.opacity = 1;
+                    trocandoFrase = false; // Libera para uma nova troca
+                });
+            }, 600); // Espera a transição de fade out ser completa
+        }
+
+        // Atualiza a frase imediatamente e depois a cada 10 segundos
+        atualizarFrase();
+        setInterval(atualizarFrase, 10000); // 10000 ms = 10 segundos
+        
+        // Dados simulados de alunos para garantir que a página de login funcione de forma independente
+        const alunos = JSON.parse(localStorage.getItem('alunos')) || [
+            // SENHAS ARMAZENADAS COMO HASH SHA-256. NUNCA ARMAZENE SENHAS EM TEXTO PURO.
+            // '123' -> a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3 (Maria)
+            // '456' -> d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35 (Pedro)
+            // '123456' -> 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92 (Admin)
+            { id: 1, nome: 'Maria Oliveira', matricula: 'RA001', email: 'maria@email.com', telefone: '11999990001', senha: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: 2, nome: 'Pedro Santos', matricula: 'RA002', email: 'pedro@email.com', telefone: '11999990002', senha: 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35' },
+            { id: 3, nome: 'Administrador', matricula: '0000110732192x', email: 'admin@bibliotech.com', telefone: '11999999999', senha: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92' }
         ];
 
-        const modalRecuperar = document.getElementById('recuperar-senha-modal');
-        const resultadoRecuperacaoEl = document.getElementById('resultado-recuperacao');
-
-        function abrirModalRecuperarSenha(event) {
-            event.preventDefault();
-            resultadoRecuperacaoEl.innerHTML = ''; // Limpa resultados anteriores
-            document.getElementById('matricula-recuperar').value = ''; // Limpa input
-            modalRecuperar.style.display = 'flex';
+        // Função auxiliar para criar um hash SHA-256 de uma string (senha)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
         }
 
-        function fecharModalRecuperarSenha() {
-            const content = modalRecuperar.querySelector('.modal-content');
-            if (content) {
-                content.classList.add('closing');
-                content.addEventListener('animationend', () => {
-                    modalRecuperar.style.display = 'none';
-                    content.classList.remove('closing');
-                }, { once: true });
-            } else {
-                modalRecuperar.style.display = 'none';
+        // Salva os dados no localStorage se ainda não existirem, para que o painel principal os veja
+        if (!localStorage.getItem('alunos')) {
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+        }
+        
+        let usuarioEmRecuperacao = null;
+
+        async function realizarLogin(event) {
+            event.preventDefault();
+
+            const params = new URLSearchParams(window.location.search);
+            const expectedRole = params.get('role');
+
+            if (!expectedRole) {
+                alert('Perfil de usuário não especificado. Por favor, recarregue a página e selecione um perfil.');
+                window.location.reload();
+                return;
             }
+
+            const loginInput = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const hashedPassword = await hashPassword(senha);
+
+            const userFound = alunos.find(u => 
+                (u.matricula === loginInput || u.email === loginInput || u.telefone === loginInput) && 
+                u.senha === hashedPassword
+            );
+
+            let loginSuccess = false;
+            let userRole = '';
+            let userName = '';
+
+            if (userFound) {
+                // A verificação de admin agora é feita pelo ID do usuário,
+                // pois a matrícula pode mudar. O ID=3 é reservado para o admin.
+                const isAdminUser = userFound.id === 3;
+
+                if (expectedRole === 'admin' && isAdminUser) {
+                    loginSuccess = true;
+                    userRole = 'admin';
+                    userName = userFound.nome;
+                } else if (expectedRole === 'student' && !isAdminUser) {
+                    loginSuccess = true;
+                    userRole = 'user'; // O sistema usa 'user' para alunos
+                    userName = userFound.nome;
+                }
+            }
+
+            if (loginSuccess) {
+                document.getElementById('loader-overlay').style.display = 'flex';
+                setTimeout(() => {
+                    localStorage.setItem('usuarioLogado', userName);
+                    localStorage.setItem('userRole', userRole);
+                    window.location.href = "index.html";
+                }, 1500);
+            } else {
+                alert('Usuário ou senha incorretos para o perfil selecionado.');
+            }
+        }
+
+        async function realizarRegistro(event) {
+            event.preventDefault();
+
+            if (document.getElementById('register-submit-btn').disabled) {
+                alert('Por favor, preencha o formulário corretamente. Verifique se a matrícula está disponível e se a senha atende aos critérios.');
+                return;
+            }
+
+            const nome = document.getElementById('register-nome').value;
+            const matricula = document.getElementById('register-matricula').value;
+            const senha = document.getElementById('register-senha').value;
+            const hashedPassword = await hashPassword(senha);
+
+            // Verifica se a matrícula já existe
+            const matriculaExistente = alunos.find(u => u.matricula.toLowerCase() === matricula.toLowerCase());
+            if (matriculaExistente) {
+                alert('Esta matrícula já está cadastrada. Por favor, tente fazer o login ou use outra matrícula.');
+                return;
+            }
+
+            const novoAluno = {
+                id: Date.now(), // ID único
+                nome: nome,
+                matricula: matricula,
+                senha: hashedPassword
+            };
+
+            alunos.push(novoAluno);
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+
+            // Exibe a animação de sucesso
+            const successOverlay = document.getElementById('success-overlay');
+            successOverlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                successOverlay.style.display = 'none';
+                document.querySelector('#register-view form').reset(); // Limpa o formulário
+                toggleViews(null, 'login'); // Volta para a tela de login
+            }, 2500);
+        }
+
+        function validarForcaSenha() {
+            const senha = document.getElementById('register-senha').value;
+            const feedbackContainer = document.getElementById('password-strength-feedback');
+            const lengthCheck = document.getElementById('length-check');
+            const caseCheck = document.getElementById('case-check');
+            const numberCheck = document.getElementById('number-check');
+
+            feedbackContainer.style.display = senha.length > 0 ? 'block' : 'none';
+
+            const isLengthValid = senha.length >= 8;
+            lengthCheck.className = isLengthValid ? 'valid' : 'invalid';
+
+            const isCaseValid = /[a-z]/.test(senha) && /[A-Z]/.test(senha);
+            caseCheck.className = isCaseValid ? 'valid' : 'invalid';
+
+            const isNumberValid = /\d/.test(senha);
+            numberCheck.className = isNumberValid ? 'valid' : 'invalid';
+
+            return isLengthValid && isCaseValid && isNumberValid;
+        }
+
+        function verificarEstadoFormRegistro() {
+            const matriculaInput = document.getElementById('register-matricula');
+            const matriculaFeedback = document.getElementById('matricula-feedback');
+            const submitBtn = document.getElementById('register-submit-btn');
+
+            // --- 1. Validação da Matrícula ---
+            const matriculaValue = matriculaInput.value.trim().toLowerCase();
+            let isMatriculaAvailable = false;
+
+            if (matriculaValue === '') {
+                matriculaFeedback.textContent = '';
+                matriculaFeedback.className = 'form-text';
+                matriculaInput.classList.remove('invalid');
+                isMatriculaAvailable = false; // Não pode registrar com matrícula vazia
+            } else {
+                const matriculaExistente = alunos.find(u => u.matricula.toLowerCase() === matriculaValue);
+                if (matriculaExistente) {
+                    matriculaFeedback.textContent = 'Matrícula já cadastrada.';
+                    matriculaFeedback.className = 'form-text error';
+                    matriculaInput.classList.add('invalid');
+                    isMatriculaAvailable = false;
+                } else {
+                    matriculaFeedback.textContent = 'Matrícula disponível.';
+                    matriculaFeedback.className = 'form-text success';
+                    matriculaInput.classList.remove('invalid');
+                    isMatriculaAvailable = true;
+                }
+            }
+
+            // --- 2. Validação da Senha e Nome ---
+            const isPasswordStrong = validarForcaSenha();
+            const isNomeFilled = document.getElementById('register-nome').value.trim() !== '';
+
+            // --- 3. Habilitar/Desabilitar Botão ---
+            submitBtn.disabled = !(isMatriculaAvailable && isPasswordStrong && isNomeFilled);
+        }
+
+        function validarForcaNovaSenha() {
+            const senha = document.getElementById('reset-nova-senha').value;
+            const feedbackContainer = document.getElementById('password-strength-feedback-reset');
+            const lengthCheck = document.getElementById('reset-length-check');
+            const caseCheck = document.getElementById('reset-case-check');
+            const numberCheck = document.getElementById('reset-number-check');
+            feedbackContainer.style.display = senha.length > 0 ? 'block' : 'none';
+            const isLengthValid = senha.length >= 8;
+            lengthCheck.className = isLengthValid ? 'valid' : 'invalid';
+            const isCaseValid = /[a-z]/.test(senha) && /[A-Z]/.test(senha);
+            caseCheck.className = isCaseValid ? 'valid' : 'invalid';
+            const isNumberValid = /\d/.test(senha);
+            numberCheck.className = isNumberValid ? 'valid' : 'invalid';
+            return isLengthValid && isCaseValid && isNumberValid;
+        }
+
+        function verificarEstadoFormReset() {
+            const nova = document.getElementById('reset-nova-senha').value;
+            const confirma = document.getElementById('reset-confirmar-senha').value;
+            const submitBtn = document.getElementById('reset-submit-btn');
+            submitBtn.disabled = !(validarForcaNovaSenha() && nova === confirma && nova !== '');
         }
 
         function recuperarSenha(event) {
             event.preventDefault();
-            const identificador = document.getElementById('matricula-recuperar').value.toLowerCase();
-            const alunoEncontrado = mockAlunos.find(aluno => 
-                aluno.matricula.toLowerCase() === identificador || 
-                (aluno.email && aluno.email.toLowerCase() === identificador));
+            const identifier = document.getElementById('forgot-identifier').value.toLowerCase();
+            const usuarioEncontrado = alunos.find(u => 
+                (u.email && u.email.toLowerCase() === identifier) || 
+                (u.matricula && u.matricula.toLowerCase() === identifier)
+            );
 
-            if (alunoEncontrado && alunoEncontrado.email) {
-                resultadoRecuperacaoEl.innerHTML = `<p style="color: #27ae60; font-weight: bold;">Instruções para redefinir a senha foram enviadas para o e-mail: <strong>${alunoEncontrado.email}</strong></p>`;
+            if (usuarioEncontrado) {
+                usuarioEmRecuperacao = usuarioEncontrado;
+                toggleViews(null, 'reset-password');
             } else {
-                resultadoRecuperacaoEl.innerHTML = `<p style="color: #e74c3c; font-weight: bold;">Usuário não encontrado. Verifique a matrícula e tente novamente.</p>`;
+                alert('Usuário não encontrado em nossa base de dados.');
             }
         }
 
-        // Fecha o modal se clicar fora dele
-        window.addEventListener('click', (event) => { if (event.target == modalRecuperar) fecharModalRecuperarSenha(); });
-        // --- Fim da Lógica de Recuperação de Senha ---
-
-        function realizarLogin(event) {
+        async function realizarAlteracaoSenha(event) {
             event.preventDefault();
+            const novaSenha = document.getElementById('reset-nova-senha').value;
+            const hashedPassword = await hashPassword(novaSenha);
 
-            const usuarioInput = document.getElementById('usuario');
-            const senhaInput = document.getElementById('senha');
-            const loginCard = document.querySelector('.login-card');
-            const loading = document.getElementById('loading-overlay');
-            const success = document.getElementById('success-overlay');
-
-            // Validação customizada com efeito de vibração
-            if (!usuarioInput.value.trim() || !senhaInput.value.trim()) {
-                loginCard.classList.add('shake');
-                setTimeout(() => loginCard.classList.remove('shake'), 500);
+            if (!usuarioEmRecuperacao) {
+                alert('Erro na sessão de recuperação. Por favor, tente identificar sua conta novamente.');
+                toggleViews(null, 'forgot-password');
                 return;
             }
 
-            const usuario = usuarioInput.value;
-
-            // Mostra a tela de carregamento
-            loading.style.display = 'flex';
-
-            // Simula um tempo de processamento curto
-            setTimeout(() => {
-                loading.style.display = 'none';
+            const index = alunos.findIndex(u => u.id === usuarioEmRecuperacao.id);
+            if (index !== -1) {
+                // Atualiza a senha no array em memória e persiste no localStorage
+                alunos[index].senha = hashedPassword;
+                localStorage.setItem('alunos', JSON.stringify(alunos));
                 
-                // Liberação total: qualquer usuário e senha são aceitos
-                localStorage.setItem('usuarioLogado', usuario);
-                localStorage.setItem('userRole', usuario.toLowerCase() === 'admin' ? 'admin' : 'user');
+                // Preenche o campo de login com a matrícula do usuário para facilitar o acesso
+                document.getElementById('usuario').value = alunos[index].matricula;
 
-                // Ativa a animação de sucesso
-                success.style.display = 'flex';
-                playSuccessSound(); // Toca o som simultaneamente com a animação
-                lancarConfetes();   // Dispara os confetes
+                alert('Senha alterada com sucesso! Agora você já pode entrar com sua nova senha.');
+                usuarioEmRecuperacao = null;
+                toggleViews(null, 'login');
+            }
+        }
 
-                setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 2200); // Tempo para o usuário ver a animação
-            }, 1200);
+        function toggleViews(event, viewName = 'login') {
+            if (event) event.preventDefault();
+
+            const views = document.querySelectorAll('.login-form-side > div[id$="-view"]');
+            
+            // Remove a classe 'active' de todas as visões
+            views.forEach(view => view.classList.remove('active'));
+
+            // Adiciona a classe 'active' à visão alvo
+            const targetView = document.getElementById(`${viewName}-view`);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+
+            // Limpa os formulários que não estão ativos ao voltar para o login
+            if (viewName === 'login') {
+                const otherForms = ['#register-view form', '#forgot-password-view form', '#reset-password-view form'];
+                otherForms.forEach(selector => {
+                    const form = document.querySelector(selector);
+                    if (form) form.reset();
+                });
+                verificarEstadoFormRegistro();
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const senhaInput = document.getElementById('senha');
+            const toggleIcon = document.getElementById('toggle-senha');
+
+            // Verifica o tipo atual do input
+            if (senhaInput.type === 'password') {
+                // Muda para texto e atualiza o ícone
+                senhaInput.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                // Muda de volta para senha e atualiza o ícone
+                senhaInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // Atualiza a UI com base no perfil escolhido
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const role = params.get('role');
+            const loginHeader = document.querySelector('.login-header h1');
+            const loginSubtext = document.querySelector('.login-header p');
+            const form = document.querySelector('form');
+            const registerLinkContainer = document.getElementById('register-link-container');
+
+            if (role === 'admin') {
+                document.querySelector('#login-view .login-header h1').textContent = 'Login Admin';
+                document.querySelector('#login-view .login-header p').textContent = 'Acesse o painel de controle administrativo.';
+                if (registerLinkContainer) registerLinkContainer.style.display = 'none'; // Esconde link de registro para admin
+            } else if (role === 'student') {
+                document.querySelector('#login-view .login-header h1').textContent = 'Login Aluno';
+                document.querySelector('#login-view .login-header p').textContent = 'Acesse o portal do aluno.';
+                if (registerLinkContainer) registerLinkContainer.style.display = 'inline'; // Garante que o link apareça
+            } else {
+                // Caso o usuário acesse a página de login diretamente
+                const loginView = document.getElementById('login-view');
+
+                // Remove o formulário e o rodapé, deixando apenas o cabeçalho.
+                const form = loginView.querySelector('form');
+                if (form) form.remove();
+                const footer = loginView.querySelector('.login-footer');
+                if (footer) footer.remove();
+
+                // Altera o cabeçalho para a seleção de perfil.
+                const loginHeader = loginView.querySelector('.login-header');
+                if (loginHeader) {
+                    loginHeader.querySelector('h1').textContent = 'Bem-vindo!';
+                    loginHeader.querySelector('p').textContent = 'Como você gostaria de entrar?';
+                    // Remove a animação de digitação para evitar problemas de layout.
+                    const h1 = loginHeader.querySelector('h1');
+                    h1.style.animation = 'none';
+                    h1.style.borderRight = 'none';
+                    h1.style.width = 'auto'; // Permite que o texto se ajuste.
+                }
+
+                // Adiciona os botões de seleção de perfil.
+                const roleButtonsContainer = document.createElement('div');
+                roleButtonsContainer.innerHTML = `
+                    <div class="role-selection-wrapper">
+                        <a href="?role=admin" class="role-selection-btn">
+                            <span class="role-title">Administrador</span>
+                            <span class="role-description">Gerenciar livros, alunos e empréstimos.</span>
+                        </a>
+                        <a href="?role=student" class="role-selection-btn">
+                            <span class="role-title">Aluno</span>
+                            <span class="role-description">Consultar acervo e meus empréstimos.</span>
+                        </a>
+                    </div>
+                `;
+                loginView.appendChild(roleButtonsContainer);
+
+                // Adiciona estilos para os novos botões de seleção de perfil
+                const style = document.createElement('style');
+                style.textContent = `
+                    .role-selection-wrapper {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 15px;
+                        margin-top: 30px;
+                    }
+                    .role-selection-btn {
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                        background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+                        padding: 20px;
+                        border-radius: 8px;
+                        text-align: left;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 4px 15px rgba(211, 84, 0, 0.4);
+                    }
+                    .role-selection-btn:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 6px 20px rgba(211, 84, 0, 0.6);
+                    }
+                    .role-selection-btn .role-title {
+                        font-size: 1.2rem;
+                        font-weight: 600;
+                        display: block;
+                        margin-bottom: 5px;
+                    }
+                    .role-selection-btn .role-description {
+                        font-size: 0.9rem;
+                        opacity: 0.9;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+
+        // Efeito Parallax no fundo
+        document.addEventListener('mousemove', function(e) {
+            const loginContainer = document.querySelector('.login-container');
+            if (!loginContainer) return;
+
+            const { clientX, clientY } = e;
+            const { innerWidth, innerHeight } = window;
+
+            const offsetX = (clientX - innerWidth / 2) / (innerWidth / 2); // -1 a 1
+            const offsetY = (clientY - innerHeight / 2) / (innerHeight / 2); // -1 a 1
+
+            const parallaxStrength = 15; // Intensidade do efeito em pixels
+            loginContainer.style.setProperty('--parallax-x', `${-offsetX * parallaxStrength}px`);
+            loginContainer.style.setProperty('--parallax-y', `${-offsetY * parallaxStrength}px`);
+        });
+
+        // Efeito de brilho no card de login
+        const loginCard = document.querySelector('.login-card');
+        if (loginCard) {
+            loginCard.addEventListener('mousemove', function(e) {
+                const rect = loginCard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                loginCard.style.setProperty('--mouse-x', `${x}px`);
+                loginCard.style.setProperty('--mouse-y', `${y}px`);
+            });
         }
     </script>
 </body>
